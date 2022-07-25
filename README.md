@@ -18,5 +18,5 @@ app
 │ └── swagger.yaml
 ├── app.js  
 ├── express.js
-├──jest.config.js
+├── jest.config.js
 ```
