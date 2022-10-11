@@ -14,6 +14,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/base-path', routes);
-app.use('/:var', ({res}) => res.status(404).json({ code:404, message: 'Not Found' }));
-app.use('/', ({res}) => res.status(200).json({ code:200, message: 'Welcome to API Template Nodejs' }));
+app.use('/:var', ({ res }) => res.status(404).json({ code: 404, message: 'Not Found' }));
+app.use('/', ({ res }) => res.status(200).json({ code: 200, message: 'Welcome to API Template Nodejs' }));
 module.exports = app;

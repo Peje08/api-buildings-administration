@@ -25,22 +25,6 @@ describe("Test Connect File", () => {
         expect(online).toBeFalsy();
     });
 
-    test("createPool should not connect on empty parameters 4", async () => {
-        const { online } = await createPool({
-            user: null,
-            password: null,
-            connectString: null
-        }, 'dev');
-        expect(online).toBeFalsy();
-
-        const { online: online2 } = await createPool({
-            user: 'test',
-            password: 'test',
-            connectString: 'test'
-        }, 'dev');
-        expect(online2).toBeTruthy();
-    });
-
     test("getPool should call createPool", async () => {
         const { dbPool } = await getPool();
         expect(dbPool).toBeDefined();

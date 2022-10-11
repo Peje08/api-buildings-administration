@@ -1,16 +1,12 @@
 {
     "name": "api-nodejs-template",
     "version": "1.0.0",
-    "description": "",
+    "description": "Api node base template",
     "main": "index.js",
     "scripts": {
         "start": "node src/app.js",
         "dev": "nodemon src/app.js",
         "test": "jest --coverage --detectOpenHandles"
-    },
-    "repository": {
-        "type": "git",
-        "url": "http://tapias.claro.amx:7990/scm/mdr/api-nodejs-template.git"
     },
     "keywords": [],
     "author": "",
