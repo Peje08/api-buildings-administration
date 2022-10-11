@@ -16,9 +16,9 @@ const connectionPoolMock = (onlineForTest = false) => ({
 //* create the connection pool with the proper dbParams
 const createPool = async (dbParams, enviroment = env) => {
     if (enviroment === 'test') return connectionPoolMock(true);
-    const { user, password, connectString } = dbParams;
-    if (user === "" || password === "" || connectString === "") {
-        logConsole(`Error creating pool - Validate dbParams ${dbParams}`);
+    const { user, password, connectString, schema } = dbParams;
+    if (user === "" || password === "" || connectString === "" || schema === "") {
+        logConsole(`Error creating pool - Validate dbParams ${JSON.stringify(dbParams)}`);
         return connectionPoolMock();
     }
     if (!connectionPool) {
@@ -26,6 +26,7 @@ const createPool = async (dbParams, enviroment = env) => {
             const dbConn = await oracledb.createPool({
                 user,
                 password,
+                schema,
                 connectString
             });
 
@@ -42,6 +43,11 @@ const createPool = async (dbParams, enviroment = env) => {
     return connectionPool
 };
 
+const closePool = seg => {
+    connectionPool.dbPool.close(seg);
+    connectionPool = null;
+}
+
 const getPool = () => (createPool(credentials));
 
-module.exports = { createPool, getPool };
+module.exports = { createPool, getPool, closePool };

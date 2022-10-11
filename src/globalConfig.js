@@ -5,8 +5,9 @@ module.exports = {
   port: 8080,
   env: process.env.NODE_ENV,
   db: {
-    user: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    connectString: process.env.DB_URL
+    user: process.env.DBCP_RAC8_RACING_USERNAME,
+    password: process.env.DBCP_RAC8_RACING_PASSWORD,
+    connectString: process.env.DBCP_RAC8_RACING_URL,
+    schema:process.env.DBCP_RAC8_RACING_SCHEMA
   }
 };

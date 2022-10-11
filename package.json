@@ -2,14 +2,15 @@
     "name": "api-nodejs-template",
     "version": "1.0.0",
     "description": "Api node base template",
-    "main": "index.js",
+    "engines": {
+        "node": "^12.12.16"
+    },
     "scripts": {
         "start": "node src/app.js",
         "dev": "nodemon src/app.js",
         "test": "jest --coverage --detectOpenHandles"
     },
-    "keywords": [],
-    "author": "",
+    "author": "John Doe",
     "license": "ISC",
     "dependencies": {
         "axios": "^0.27.2",

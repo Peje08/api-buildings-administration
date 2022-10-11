@@ -11,7 +11,8 @@ describe("Test Connect File", () => {
         const { online } = await createPool({
             user: '',
             password: '',
-            connectString: ''
+            connectString: '',
+            schema:''
         });
         expect(online).toBeTruthy();
     });
@@ -20,7 +21,8 @@ describe("Test Connect File", () => {
         const { online } = await createPool({
             user: '',
             password: '',
-            connectString: ''
+            connectString: '',
+            schema:''
         }, 'dev');
         expect(online).toBeFalsy();
     });

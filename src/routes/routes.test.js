@@ -12,4 +12,9 @@ describe('Api routes', function () {
     expect(res.statusCode).toBe(200);
     expect(res.text).toEqual(JSON.stringify({code:200,message:'Welcome to API Template Nodejs Prefix'}));
   });
+
+  test('Get /endpoint/:param1/:param2 should respond OK', async () => {
+    const res = await request(app).get('/endpoint/1/2');
+    expect(res.statusCode).toBe(200);
+  });
 });
