@@ -1,4 +1,5 @@
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
 const YAML = require('yamljs');
@@ -10,6 +11,7 @@ const app = express();
 app.disable("x-powered-by");
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

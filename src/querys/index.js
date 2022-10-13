@@ -3,4 +3,8 @@ const query = () => (`SELECT colum1, column2
     WHERE column = :var
 `);
 
-module.exports = { query }
+const queryInsert = () => (`INSERT INTO table1 
+    VALUES (:a, :b)
+`);
+
+module.exports = { query, queryInsert }

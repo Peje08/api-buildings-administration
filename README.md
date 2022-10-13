@@ -9,11 +9,13 @@
 .
 ├── jest.config.js
 ├── package.json
+├── package-lock.json
 ├── README.md
 ├── setup-env.js
 ├── sonar-project.properties
 └── src
     ├── app.js
+    ├── app.test.js
     ├── controllers
     │   └── index.js
     ├── db_config
@@ -28,14 +30,13 @@
     ├── express.test.js
     ├── globalConfig.js
     ├── querys
-    │   └── index.js
+    │   ├── index.js
+    │   └── querys.test.js
     ├── routes
-    │   └── index.js
-    ├── swagger_config
-    │   └── swagger.yaml
+    │   ├── index.js
+    │   └── routes.test.js
     └── swagger.yaml
 ```
-
 ### Controller Example
 
 ```js
