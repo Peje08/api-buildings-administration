@@ -1,2 +1,2 @@
-const dotenv = require('dotenv');
-dotenv.config({ path: '.env.example' });
+const dotenv = require('dotenv')
+dotenv.config({ path: '.env.example' })

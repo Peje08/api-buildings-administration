@@ -1,43 +1,44 @@
 {
-    "name": "api-nodejs-template",
-    "version": "1.0.0",
-    "description": "Api node base template",
-    "engines": {
-        "node": "^16.15.1"
-    },
-    "scripts": {
-        "start": "node src/app.js",
-        "dev": "nodemon src/app.js",
-        "test": "jest --coverage"
-    },
-    "author": "John Doe",
-    "license": "ISC",
-    "dependencies": {
-        "axios": "^1.1.2",
-        "cookie-parser": "^1.4.6",
-        "cors": "^2.8.5",
-        "dotenv": "^16.0.1",
-        "express": "^4.18.1",
-        "lodash": "^4.17.21",
-        "oracledb": "^5.4.0",
-        "swagger-jsdoc": "^6.2.1",
-        "swagger-ui-express": "^4.5.0",
-        "yamljs": "^0.3.0"
-    },
-    "devDependencies": {
-        "@babel/cli": "^7.19.3",
-        "@babel/core": "^7.19.3",
-        "chai": "^4.3.6",
-        "eslint-config-airbnb": "^19.0.4",
-        "eslint-config-babel": "^9.0.0",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-plugin-import": "^2.26.0",
-        "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-prettier": "^4.2.1",
-        "jest": "^28.1.1",
-        "jest-sonar": "^0.2.12",
-        "jest-sonar-reporter": "^2.0.0",
-        "sinon": "^14.0.0",
-        "supertest": "^6.2.4"
-    }
+  "name": "api-nodejs-template",
+  "version": "1.0.0",
+  "description": "Api node base template",
+  "engines": {
+    "node": "^16.15.1"
+  },
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest --coverage"
+  },
+  "author": "John Doe",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.1.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "lodash": "^4.17.21",
+    "oracledb": "^5.4.0",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.5.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
+    "chai": "^4.3.6",
+    "eslint": "^8.25.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.3.0",
+    "eslint-plugin-promise": "^6.1.0",
+    "jest": "^29.1.2",
+    "jest-sonar": "^0.2.12",
+    "jest-sonar-reporter": "^2.0.0",
+    "prettier": "^2.7.1",
+    "sinon": "^14.0.0",
+    "supertest": "^6.2.4"
+  }
 }

@@ -1,0 +1,6 @@
+node_modules
+reports
+coverage
+package-lock.json
+README.md
+swagger.yaml

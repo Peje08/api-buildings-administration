@@ -1,0 +1,25 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "jsxSingleQuote": true,
+  "printWidth": 100,
+  "tabWidth": 2,
+  "trailingComma": "none",
+  "useTabs": true,
+  "overrides": [
+    {
+      "files": ["*.json", "*.md", "*.toml", "*.yml"],
+      "options": {
+        "useTabs": false,
+        "singleQuote": true
+      }
+    },
+    {
+      "files": "*.astro",
+      "options": {
+        "parser": "astro"
+      }
+    }
+  ],
+  "endOfLine": "lf"
+}
