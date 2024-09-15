@@ -1,6 +1,6 @@
 ## API Template Node.js con MongoDB
 
-![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB) ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
 Este proyecto es una plantilla de API construida con Node.js y MongoDB, que incluye ejemplos de modelos, controladores y rutas para los recursos User y Post. También está configurado para ejecutarse en contenedores Docker, lo que facilita su despliegue y ejecución.
 
