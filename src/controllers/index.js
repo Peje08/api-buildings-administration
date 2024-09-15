@@ -1,28 +1,44 @@
-const oracledb = require('oracledb')
-const { select, execute } = require('../db_config/oracledb-wrapper')
-const { query, queryInsert } = require('../querys')
+const User = require('../models/User')
+const Post = require('../models/Post')
 
-const index = ({ res }) =>
+const index = (req, res) =>
 	res.status(200).json({ code: 200, message: 'Welcome to API Template Nodejs Prefix' })
 
-const controllerFuncSelect = async (req, res) => {
-	const { param1, param2 } = req.params
-	const queryString = query()
-	const { success, data, message, code } = await select(queryString, {
-		foo: { type: oracledb.STRING, val: param1 },
-		var: { type: oracledb.NUMBER, val: Number(param2) }
-	})
-	return res.status(code).json({ success, data, message })
+const controllerFuncSelectPosts = async (req, res) => {
+	try {
+		const posts = await Post.find().populate('autor', 'nombre correo')
+		res.status(200).json(posts)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
+const controllerFuncSelectUsers = async (req, res) => {
+	try {
+		const users = await User.find()
+		res.status(200).json(users)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
 }
 
 const controllerFuncExecute = async (req, res) => {
-	const someData = req.body
-	const queryString = queryInsert()
-	const { success, data, message, code } = await execute(queryString, {
-		a: { type: oracledb.STRING, val: someData.value1 },
-		b: { type: oracledb.NUMBER, val: Number(someData.value2) }
-	})
-	return res.status(code).json({ success, data, message })
+	try {
+		const { nombre, correo, clave } = req.body
+
+		// Crear un nuevo usuario
+		const nuevoUsuario = new User({ nombre, correo, clave })
+		await nuevoUsuario.save()
+
+		res.status(201).json(nuevoUsuario)
+	} catch (err) {
+		res.status(400).json({ error: err.message })
+	}
 }
 
-module.exports = { index, controllerFuncSelect, controllerFuncExecute }
+module.exports = {
+	index,
+	controllerFuncSelectPosts,
+	controllerFuncExecute,
+	controllerFuncSelectUsers
+}

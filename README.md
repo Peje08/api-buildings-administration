@@ -1,68 +1,100 @@
-## NodeJS API Template
+## API Template Node.js con MongoDB
 
-* SonarQube Ready
-* OracleDB Ready [node-oracledb](https://github.com/oracle/node-oracledb/tree/main/examples).
+Este proyecto es una plantilla de API construida con Node.js y MongoDB, que incluye ejemplos de modelos, controladores y rutas para los recursos User y Post. También está configurado para ejecutarse en contenedores Docker, lo que facilita su despliegue y ejecución.
+
 
 ### Folder Structure Convention
 
 ```
 .
-├── jest.config.js
+├── src
+│   ├── controllers
+│   │   └── index.js
+│   ├── models
+│   │   ├── User.js
+│   │   └── Post.js
+│   ├── routes
+│   │   └── index.js
+│   ├── db.js
+│   ├── express.js
+│   ├── swagger.yaml
+│   └── app.js
+├── .env
+├── .gitignore
 ├── package.json
-├── package-lock.json
-├── README.md
-├── setup-env.js
-├── sonar-project.properties
-└── src
-    ├── app.js
-    ├── app.test.js
-    ├── controllers
-    │   └── index.js
-    ├── db_config
-    │   ├── connect.js
-    │   ├── helpers.js
-    │   ├── oracledb-wrapper.js
-    │   └── test
-    │       ├── connect.test.js
-    │       ├── helpers.test.js
-    │       └── oracledb-wrapper.test.js
-    ├── express.js
-    ├── express.test.js
-    ├── globalConfig.js
-    ├── querys
-    │   ├── index.js
-    │   └── querys.test.js
-    ├── routes
-    │   ├── index.js
-    │   └── routes.test.js
-    └── swagger.yaml
-```
-### Controller Example
-
-```js
-const routeCallback = async (req, res) => {
-    const { someParam } = req.params
-    const query = getQuery();
-    const { success, data, message } = await select(query, { id: { type: oracledb.STRING, val: someParam } });
-    return (success) ? res.status(200).json(data) : res.status(400).json({message});
-};
-```
-La funcion **select** retornara un objeto con la siguiente estructura:
-
-```js
-{
-    success: true;
-    data: [],
-    message: 'string'
-}
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
 ```
 
-La propiedad **success** (booleano) es la que determinara si la ejecución del query a BD fue de manera correcta, según esta variable se puede validar lógica para retornar del api errores personalizados para cada controlador, en caso de error la propiedad **message** tendrá el mensaje de error de la librería de conexión a oracledb
+- src/controllers: Controladores que manejan la lógica de las solicitudes.
+- src/models: Modelos de Mongoose para User y Post.
+- src/routes: Definición de las rutas de la API.
+- src/db.js: Configuración y conexión a la base de datos.
+- src/express.js: Configuración de Express y middlewares.
+- src/swagger.yaml: Definición de la documentación de la API en Swagger.
+- app.js: Punto de entrada de la aplicación.
+- Dockerfile: Configuración para crear la imagen Docker de la aplicación.
+- docker-compose.yml: Configuración para levantar la aplicación y MongoDB con Docker Compose.
 
-La propiedad **data** sera el array de elementos retornados de la consulta en caso de que esta haya sido exitosa
+### Instalación
 
-Todos los valores a parsear en el query, deben enviarse como un objeto en caso de existir, este objeto sera el 2do parámetro de la función **select** y debe tener la estructura que propone la documentación, el nombre que tiene dentro de la string del query, el tipo de dato y su valor, esto evita problemas de casteo de tipo de datos en el motor de oracle ya que es muy sensible en este punto
+#### Clonar el repositorio
 
-Para ejemplos de uso mas extenso ver: [Api Sites WDC](http://tapias.claro.amx:7990/projects/WDC/repos/api-sites-wdc/browse?at=refs%2Fheads%2Fdevelop).
+```bash
+git clone https://github.com/tu_usuario/tu_repositorio.git
+cd tu_repositorio
+```
+#### Variables de entorno
 
-Esta plantilla sera un compendio de buenas practicas asi que cualquier aporte es bienvenido para ir mejorandola en el tiempo :sunglasses:
+Crea un archivo .env en la raíz del proyecto y agrega las siguientes variables:
+
+```
+MONGODB_URI=mongodb://mongo:27017/tu_base_de_datos
+PORT=4000
+```
+
+- `MONGODB_URI`: La URI de conexión a tu base de datos MongoDB. Cuando uses Docker, apunta al servicio mongo definido en docker-compose.yml.
+
+- `PORT`: El puerto en el que se ejecutará la aplicación.
+
+### Ejecutar la aplicación
+
+#### Ejecutar con Docker
+
+**Paso 1: Asegúrate de tener Docker Desktop instalado y en ejecución**
+
+- Descarga e instala Docker Desktop desde la página oficial: Docker Desktop.
+
+- Inicia Docker Desktop y verifica que esté en ejecución antes de continuar.
+
+**Paso 2: Construir y levantar los contenedores**
+
+Ejecuta el siguiente comando en la raíz de tu proyecto:
+
+```bash
+docker-compose up --build
+```
+
+Este comando:
+- Construye las imágenes de Docker según el Dockerfile.
+- Levanta los servicios definidos en docker-compose.yml:
+    - app: Tu aplicación Node.js.
+    - mongo: Una instancia de MongoDB.
+
+**Paso 3: Verificar que los contenedores están en ejecución**
+
+- En la terminal, deberías ver logs tanto de la aplicación como de MongoDB.
+
+- Para verificar los contenedores en ejecución, abre otra terminal y ejecuta:
+
+```bash
+docker-compose ps
+```
+
+**Paso 4: Acceder a la aplicación**
+
+- Abre tu navegador y visita `http://localhost:4000`
+
+- Deberías ver un mensaje de bienvenida de la API.
+

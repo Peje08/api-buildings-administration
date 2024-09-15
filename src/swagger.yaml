@@ -12,8 +12,8 @@ servers:
     variables:
       url:
         enum:
-          - localhost:8080
-        default: localhost:8080
+          - localhost:4000
+        default: localhost:4000
       protocol:
         enum:
           - http
