@@ -1,5 +1,7 @@
 ## API Template Node.js con MongoDB
 
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+
 Este proyecto es una plantilla de API construida con Node.js y MongoDB, que incluye ejemplos de modelos, controladores y rutas para los recursos User y Post. También está configurado para ejecutarse en contenedores Docker, lo que facilita su despliegue y ejecución.
 
 
@@ -42,8 +44,8 @@ Este proyecto es una plantilla de API construida con Node.js y MongoDB, que incl
 #### Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu_usuario/tu_repositorio.git
-cd tu_repositorio
+git clone https://github.com/codexar-latam/api-nodejs-template.git
+cd api-nodejs-template
 ```
 #### Variables de entorno
 
