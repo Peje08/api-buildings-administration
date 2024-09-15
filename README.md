@@ -52,7 +52,7 @@ cd api-nodejs-template
 Crea un archivo .env en la raíz del proyecto y agrega las siguientes variables:
 
 ```
-MONGODB_URI=mongodb://mongo:27017/tu_base_de_datos
+MONGODB_URI=mongodb://mongo:27017/test_db
 PORT=4000
 ```
 
@@ -96,7 +96,7 @@ docker-compose ps
 
 **Paso 4: Acceder a la aplicación**
 
-- Abre tu navegador y visita `http://localhost:4000`
+- Abre tu navegador y visita `http://localhost:4000/api`
 
 - Deberías ver un mensaje de bienvenida de la API.
 

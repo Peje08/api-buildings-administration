@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "Api node base template",
   "engines": {
-    "node": "^16.15.1"
+    "node": "^18"
   },
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "test": "jest --coverage"
   },
-  "author": "John Doe",
+  "author": "Codexar Latam",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.1.2",
