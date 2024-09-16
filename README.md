@@ -1,8 +1,8 @@
-## API Template Node.js con MongoDB
+## API Buildings Administration
 
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB) ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
-Este proyecto es una plantilla de API construida con Node.js y MongoDB, que incluye ejemplos de modelos, controladores y rutas para los recursos User y Post. También está configurado para ejecutarse en contenedores Docker, lo que facilita su despliegue y ejecución.
+La API de Administración de Edificios es un servicio RESTful diseñado para gestionar usuarios, direcciones y documentos para administraciones de consorcios de edificios. Permite a los administradores realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) en diversas entidades, asegurando una gestión eficiente de los consorcios de edificios.
 
 
 ### Folder Structure Convention
@@ -44,15 +44,21 @@ Este proyecto es una plantilla de API construida con Node.js y MongoDB, que incl
 #### Clonar el repositorio
 
 ```bash
-git clone https://github.com/codexar-latam/api-nodejs-template.git
-cd api-nodejs-template
+git clone https://github.com/Peje08/api-buildings-administration
+cd api-buildings-administration
+```
+
+#### Instalar dependencias
+
+```bash     
+npm install
 ```
 #### Variables de entorno
 
 Crea un archivo .env en la raíz del proyecto y agrega las siguientes variables:
 
 ```
-MONGODB_URI=mongodb://mongo:27017/test_db
+MONGODB_URI=mongodb://mongo:27017/buildings_admnisitration
 PORT=4000
 ```
 
@@ -61,6 +67,12 @@ PORT=4000
 - `PORT`: El puerto en el que se ejecutará la aplicación.
 
 ### Ejecutar la aplicación
+
+### Ejecutar localmente
+
+```bash
+npm run dev
+```
 
 #### Ejecutar con Docker
 
@@ -99,4 +111,37 @@ docker-compose ps
 - Abre tu navegador y visita `http://localhost:4000/api`
 
 - Deberías ver un mensaje de bienvenida de la API.
+
+### Endpoints de la API
+
+#### Domicilios
+
+Gestiona las direcciones asociadas a usuarios.
+
+GET `/addresses`
+GET `/addresses:id`
+POST `/addresses`
+PUT `/addresses/:id`
+DELETE `/addresses/:id`
+
+#### Documentos
+
+Gestiona los documentos asociados a usuarios.
+
+GET `/documents`
+GET `/documents:id`
+POST `/documents`
+PUT `/documents/:id`
+DELETE `/documents/:id`
+
+#### Usuarios
+
+Gestiona los usuarios de la aplicación.
+
+GET `/users`
+GET `/users:id`
+POST `/users`
+PUT `/users/:id`
+DELETE `/users/:id`
+
 
