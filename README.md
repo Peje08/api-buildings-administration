@@ -118,30 +118,30 @@ docker-compose ps
 
 Gestiona las direcciones asociadas a usuarios.
 
-GET `/addresses`
-GET `/addresses:id`
-POST `/addresses`
-PUT `/addresses/:id`
-DELETE `/addresses/:id`
+- GET `/addresses`
+- GET `/addresses:id`
+- POST `/addresses`
+- PUT `/addresses/:id`
+- DELETE `/addresses/:id`
 
 #### Documentos
 
 Gestiona los documentos asociados a usuarios.
 
-GET `/documents`
-GET `/documents:id`
-POST `/documents`
-PUT `/documents/:id`
-DELETE `/documents/:id`
+- GET `/documents`
+- GET `/documents:id`
+- POST `/documents`
+- PUT `/documents/:id`
+- DELETE `/documents/:id`
 
 #### Usuarios
 
 Gestiona los usuarios de la aplicación.
 
-GET `/users`
-GET `/users:id`
-POST `/users`
-PUT `/users/:id`
-DELETE `/users/:id`
+- GET `/users`
+- GET `/users:id`
+- POST `/users`
+- PUT `/users/:id`
+- DELETE `/users/:id`
 
 
