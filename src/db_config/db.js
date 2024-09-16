@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 require('dotenv').config()
 
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/test_db'
+const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/buildings_administration'
 
 mongoose
 	.connect(uri)
