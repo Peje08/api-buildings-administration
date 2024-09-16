@@ -11,10 +11,14 @@ La API de Administración de Edificios es un servicio RESTful diseñado para ges
 .
 ├── src
 │   ├── controllers
-│   │   └── index.js
+│   │   └── index.controller.js
+│   │   └── address.controller.js
+│   │   └── document.controller.js
+│   │   └── user.controller.js
 │   ├── models
-│   │   ├── User.js
-│   │   └── Post.js
+│   │   ├── Address.js
+│   │   └── Document.js
+│   │   └── User.js
 │   ├── routes
 │   │   └── index.js
 │   ├── db.js
