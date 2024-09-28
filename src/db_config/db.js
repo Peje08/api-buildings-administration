@@ -6,10 +6,10 @@ const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/buildings_admi
 mongoose
 	.connect(uri)
 	.then(() => {
-		console.log('Conexión a MongoDB establecida con éxito')
+		console.log('Connection to MongoDB successful!')
 	})
 	.catch((err) => {
-		console.error('Error al conectar a MongoDB', err)
+		console.error('Error connecting with MongoDB', err)
 	})
 
 module.exports = mongoose

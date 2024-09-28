@@ -1,0 +1,119 @@
+paths:
+  /user/register:
+    post:
+      summary: Register a new user
+      description: Registers a new user with name, email, and password.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'John'
+                lastname:
+                  type: string
+                  example: 'Doe'
+                email:
+                  type: string
+                  example: 'johndoe@example.com'
+                password:
+                  type: string
+                  example: 'password123'
+                cellularNumer:
+                  type: string
+                  example: '1234567890'
+                type:
+                  type: string
+                  example: 'SUPERUSER'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  userId:
+                    type: string
+        '400':
+          description: User already registered
+        '500':
+          description: Error registering user
+
+  /user/login:
+    post:
+      summary: User login
+      description: Logs in a user and returns an access and refresh token.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: 'johndoe@example.com'
+                password:
+                  type: string
+                  example: 'password123'
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  userId:
+                    type: string
+        '400':
+          description: Invalid credentials
+        '500':
+          description: Error logging in
+
+  /user/refresh-token:
+    post:
+      summary: Refresh the access token
+      description: Refresh the access token using the refresh token.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: 'your_refresh_token_here'
+      responses:
+        '200':
+          description: New access token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+        '401':
+          description: Invalid or missing refresh token
+        '500':
+          description: Error refreshing token
