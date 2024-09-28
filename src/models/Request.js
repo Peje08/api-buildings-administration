@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const DocumentSchema = new mongoose.Schema(
+const RequestSchema = new mongoose.Schema(
     {
         owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         friendlyId: {
@@ -10,15 +10,16 @@ const DocumentSchema = new mongoose.Schema(
         },
         type: {
             type: String,
-            enum: ['RESUME', 'CLAIM', 'REQUEST', 'VOUCHER'],
+            enum: ['CLAIM', 'REQUEST', 'DEBTFREE'],
             required: true
         },
-        ducumentUrl: {
+        text: {
             type: String,
             required: true
-        }
+        },
+        documents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Document' }],
     },
     { timestamps: true }
 )
 
-module.exports = mongoose.model('Document', DocumentSchema)
+module.exports = mongoose.model('Request', RequestSchema)
