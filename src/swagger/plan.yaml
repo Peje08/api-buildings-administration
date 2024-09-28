@@ -1,0 +1,220 @@
+paths:
+  /plans:
+    post:
+      summary: Create a new plan
+      description: Creates a new plan with the provided details.
+      tags:
+        - Plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'Premium Plan'
+                description:
+                  type: string
+                  example: 'This is a premium plan with extra features.'
+                price:
+                  type: number
+                  example: 199.99
+                featuresFlags:
+                  type: array
+                  items:
+                    type: string
+                  example: ['Support 24/7', 'Advanced Analytics']
+                functionUnitsAmount:
+                  type: number
+                  example: 100
+      responses:
+        '201':
+          description: Plan created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  friendlyId:
+                    type: string
+                    example: 'premium-plan'
+                  name:
+                    type: string
+                    example: 'Premium Plan'
+                  description:
+                    type: string
+                    example: 'This is a premium plan with extra features.'
+                  price:
+                    type: number
+                    example: 199.99
+                  featuresFlags:
+                    type: array
+                    items:
+                      type: string
+                    example: ['Support 24/7', 'Advanced Analytics']
+                  functionUnitsAmount:
+                    type: number
+                    example: 100
+        '500':
+          description: Error creating plan
+
+    get:
+      summary: Get all plans
+      description: Retrieves all available plans.
+      tags:
+        - Plan
+      responses:
+        '200':
+          description: List of all plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: '64f9a5b7c2e4d3a9b8a0e1f2'
+                    friendlyId:
+                      type: string
+                      example: 'premium-plan'
+                    name:
+                      type: string
+                      example: 'Premium Plan'
+                    description:
+                      type: string
+                      example: 'This is a premium plan with extra features.'
+                    price:
+                      type: number
+                      example: 199.99
+                    featuresFlags:
+                      type: array
+                      items:
+                        type: string
+                      example: ['Support 24/7', 'Advanced Analytics']
+                    functionUnitsAmount:
+                      type: number
+                      example: 100
+        '500':
+          description: Error retrieving plans
+
+  /plans/{id}:
+    get:
+      summary: Get plan by ID
+      description: Retrieves a specific plan by its ID.
+      tags:
+        - Plan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f2'
+          description: The ID of the plan
+      responses:
+        '200':
+          description: Plan retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f2'
+                  friendlyId:
+                    type: string
+                    example: 'premium-plan'
+                  name:
+                    type: string
+                    example: 'Premium Plan'
+                  description:
+                    type: string
+                    example: 'This is a premium plan with extra features.'
+                  price:
+                    type: number
+                    example: 199.99
+                  featuresFlags:
+                    type: array
+                    items:
+                      type: string
+                    example: ['Support 24/7', 'Advanced Analytics']
+                  functionUnitsAmount:
+                    type: number
+                    example: 100
+        '404':
+          description: Plan not found
+        '500':
+          description: Error retrieving plan
+
+    put:
+      summary: Update a plan by ID
+      description: Updates the details of a specific plan by its ID.
+      tags:
+        - Plan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f2'
+          description: The ID of the plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'Updated Plan Name'
+                description:
+                  type: string
+                  example: 'This is the updated description for the plan.'
+                price:
+                  type: number
+                  example: 299.99
+                featuresFlags:
+                  type: array
+                  items:
+                    type: string
+                  example: ['Support 24/7', 'Advanced Analytics']
+                functionUnitsAmount:
+                  type: number
+                  example: 150
+      responses:
+        '200':
+          description: Plan updated successfully
+        '404':
+          description: Plan not found
+        '500':
+          description: Error updating plan
+
+    delete:
+      summary: Delete a plan by ID
+      description: Deletes a specific plan by its ID.
+      tags:
+        - Plan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f2'
+          description: The ID of the plan
+      responses:
+        '200':
+          description: Plan deleted successfully
+        '404':
+          description: Plan not found
+        '500':
+          description: Error deleting plan
