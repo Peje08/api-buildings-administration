@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema(
 			type: String,
 			required: true
 		},
-		surname: {
+		lastname: {
 			type: String,
 			required: true
 		},
@@ -20,9 +20,13 @@ const UserSchema = new mongoose.Schema(
 			required: true
 		},
 		cellularNumer: {
-            type: String,
-            required: true
-        },
+			type: String,
+			required: true
+		},
+		type: {
+			type: String,
+			enum: ['SUPERUSER', 'TENANT', 'OWNER', 'ADMINISTRATION']
+		}
 	},
 	{ timestamps: true }
 )

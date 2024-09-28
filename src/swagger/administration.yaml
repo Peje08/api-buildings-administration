@@ -1,0 +1,246 @@
+paths:
+  /administrations:
+    get:
+      summary: Get all administrations
+      description: Retrieves all administrations along with their owner details.
+      tags:
+        - Administration
+      responses:
+        '200':
+          description: List of administrations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: '66f8357080f13d0734e62350'
+                    ownerId:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: '66f82fe28ff071b8beb35bcd'
+                        name:
+                          type: string
+                          example: 'Federico'
+                        lastname:
+                          type: string
+                          example: 'Milone'
+                        email:
+                          type: string
+                          example: 'fedmilo91@gmail.com'
+                        cellularNumer:
+                          type: string
+                          example: '2213080328'
+                        type:
+                          type: string
+                          example: 'SUPERUSER'
+                    friendlyId:
+                      type: string
+                      example: 'admin-cabildo-66f8'
+                    name:
+                      type: string
+                      example: 'Admin Cabildo'
+                    buildings:
+                      type: array
+                      items:
+                        type: string
+                        example: 'buildingId'
+        '404':
+          description: No administrations found
+        '500':
+          description: Error obtaining administrations
+
+    post:
+      summary: Create a new administration
+      description: Creates a new administration linked to an owner.
+      tags:
+        - Administration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'Admin Central'
+                ownerId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f2'
+                buildings:
+                  type: array
+                  items:
+                    type: string
+                  example: []
+      responses:
+        '201':
+          description: Administration created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  friendlyId:
+                    type: string
+                    example: 'admin-central-64f9'
+                  name:
+                    type: string
+                    example: 'Admin Central'
+                  ownerId:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f2'
+                  buildings:
+                    type: array
+                    items:
+                      type: string
+        '500':
+          description: Error creating administration
+
+  /administrations/{id}:
+    get:
+      summary: Get administration by ID
+      description: Retrieves a specific administration by its ID.
+      tags:
+        - Administration
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '66f8357080f13d0734e62350'
+          description: The ID of the administration
+      responses:
+        '200':
+          description: Administration retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '66f8357080f13d0734e62350'
+                  ownerId:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: '66f82fe28ff071b8beb35bcd'
+                      name:
+                        type: string
+                        example: 'Federico'
+                      lastname:
+                        type: string
+                        example: 'Milone'
+                      email:
+                        type: string
+                        example: 'fedmilo91@gmail.com'
+                      cellularNumer:
+                        type: string
+                        example: '2213080328'
+                      type:
+                        type: string
+                        example: 'SUPERUSER'
+                  friendlyId:
+                    type: string
+                    example: 'admin-cabildo-66f8'
+                  name:
+                    type: string
+                    example: 'Admin Cabildo'
+                  buildings:
+                    type: array
+                    items:
+                      type: string
+                      example: 'buildingId'
+        '404':
+          description: Administration not found
+        '500':
+          description: Error obtaining administration
+
+    put:
+      summary: Update an administration
+      description: Updates an administration's name and/or buildings.
+      tags:
+        - Administration
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '66f8357080f13d0734e62350'
+          description: The ID of the administration to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'Updated Admin Name'
+                buildings:
+                  type: array
+                  items:
+                    type: string
+                    example: 'buildingId'
+      responses:
+        '200':
+          description: Administration updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '66f8357080f13d0734e62350'
+                  name:
+                    type: string
+                    example: 'Updated Admin Name'
+                  friendlyId:
+                    type: string
+                    example: 'updated-admin-name'
+                  ownerId:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f2'
+                  buildings:
+                    type: array
+                    items:
+                      type: string
+                      example: 'buildingId'
+        '404':
+          description: Administration not found
+        '500':
+          description: Error updating administration
+
+    delete:
+      summary: Delete an administration
+      description: Deletes an administration by its ID.
+      tags:
+        - Administration
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '66f8357080f13d0734e62350'
+          description: The ID of the administration to delete
+      responses:
+        '200':
+          description: Administration deleted successfully
+        '404':
+          description: Administration not found
+        '500':
+          description: Error deleting administration
