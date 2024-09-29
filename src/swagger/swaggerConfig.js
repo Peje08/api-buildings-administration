@@ -3,6 +3,9 @@ const YAML = require('yamljs')
 const userDoc = YAML.load('src/swagger/user.yaml')
 const administrationDoc = YAML.load('src/swagger/administration.yaml')
 const planDoc = YAML.load('src/swagger/plan.yaml')
+const buildingDoc = YAML.load('src/swagger/building.yaml')
+const towerDoc = YAML.load('src/swagger/tower.yaml')
+const functionalUnitDoc = YAML.load('src/swagger/functionalUnit.yaml')
 const baseDoc = YAML.load('src/swagger/index.yaml')
 
 const swaggerDocument = {
@@ -10,7 +13,10 @@ const swaggerDocument = {
 	paths: {
 		...userDoc.paths,
 		...administrationDoc.paths,
-		...planDoc.paths
+		...planDoc.paths,
+		...buildingDoc.paths,
+		...towerDoc.paths,
+		...functionalUnitDoc.paths
 	},
 	components: {
 		...baseDoc.components

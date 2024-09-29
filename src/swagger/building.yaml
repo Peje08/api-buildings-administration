@@ -1,0 +1,340 @@
+paths:
+  /buildings:
+    post:
+      summary: Create a new building
+      description: Creates a new building with the provided details.
+      tags:
+        - Building
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                administrationId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f2'
+                planId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f3'
+                streetName:
+                  type: string
+                  example: 'Main Street'
+                streetNumber:
+                  type: string
+                  example: '123'
+                towers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: 'Tower 1'
+                      floorsNumber:
+                        type: number
+                        example: 10
+                      premisesAmount:
+                        type: number
+                        example: 5
+      responses:
+        '201':
+          description: Building created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f4'
+                  friendlyId:
+                    type: string
+                    example: 'main-street-123-a1b2'
+                  streetName:
+                    type: string
+                    example: 'Main Street'
+                  streetNumber:
+                    type: string
+                    example: '123'
+                  towersData:
+                    type: array
+                    items:
+                      type: string
+                      example: '64f9a5b7c2e4d3a9b8a0e1f5'
+        '500':
+          description: Error creating building
+
+    get:
+      summary: Get all buildings
+      description: Retrieves all buildings.
+      tags:
+        - Building
+      responses:
+        '200':
+          description: List of buildings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: '64f9a5b7c2e4d3a9b8a0e1f4'
+                    friendlyId:
+                      type: string
+                      example: 'main-street-123-a1b2'
+                    streetName:
+                      type: string
+                      example: 'Main Street'
+                    streetNumber:
+                      type: string
+                      example: '123'
+                    towersData:
+                      type: array
+                      items:
+                        type: string
+                        example: '64f9a5b7c2e4d3a9b8a0e1f5'
+        '500':
+          description: Error retrieving buildings
+
+  /buildings/{id}:
+    get:
+      summary: Get building by ID
+      description: Retrieves a specific building by its ID.
+      tags:
+        - Building
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f4'
+          description: The ID of the building
+      responses:
+        '200':
+          description: Building retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f4'
+                  friendlyId:
+                    type: string
+                    example: 'main-street-123-a1b2'
+                  streetName:
+                    type: string
+                    example: 'Main Street'
+                  streetNumber:
+                    type: string
+                    example: '123'
+                  towersData:
+                    type: array
+                    items:
+                      type: string
+                      example: '64f9a5b7c2e4d3a9b8a0e1f5'
+        '404':
+          description: Building not found
+        '500':
+          description: Error retrieving building
+
+    put:
+      summary: Update a building by ID
+      description: Updates the details of a specific building by its ID, including the option to remove towers.
+      tags:
+        - Building
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f4'
+          description: The ID of the building
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                streetName:
+                  type: string
+                  example: 'Updated Street'
+                streetNumber:
+                  type: string
+                  example: '456'
+                planId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f6'
+                towersToRemove:
+                  type: array
+                  items:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f7'
+                  description: List of tower IDs to remove from the building
+      responses:
+        '200':
+          description: Building updated successfully
+        '404':
+          description: Building not found
+        '500':
+          description: Error updating building
+
+    delete:
+      summary: Delete a building by ID
+      description: Deletes a specific building by its ID.
+      tags:
+        - Building
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f4'
+          description: The ID of the building
+      responses:
+        '200':
+          description: Building deleted successfully
+        '404':
+          description: Building not found
+        '500':
+          description: Error deleting building
+
+  /buildings/create-full:
+    post:
+      summary: Create a full building (with towers and functional units)
+      description: Creates a new building with the provided details, including towers and functional units.
+      tags:
+        - Building
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                administrationId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f2'
+                planId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f3'
+                streetName:
+                  type: string
+                  example: 'Main Street'
+                streetNumber:
+                  type: string
+                  example: '123'
+                ownerUserId:
+                  type: string
+                  description: 'The user who owns the building'
+                  example: '64f9a5b7c2e4d3a9b8a0e1f9'
+                towers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      floorsNumber:
+                        type: number
+                        example: 10
+                      premisesAmount:
+                        type: number
+                        example: 5
+                      functionalUnits:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: 'Functional Unit 1A'
+                            type:
+                              type: string
+                              enum: ['APARTMENT', 'PREMISE']
+                              example: 'APARTMENT'
+                            occupied:
+                              type: boolean
+                              example: false
+                            ownerUserId:
+                              type: string
+                              description: 'User ID of the owner of the functional unit'
+                              example: '64f9a5b7c2e4d3a9b8a0e1f9'
+                            tenantUserId:
+                              type: string
+                              description: 'User ID of the tenant if applicable'
+                              example: '64f9a5b7c2e4d3a9b8a0e1f8'
+      responses:
+        '201':
+          description: Full building created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f4'
+                  friendlyId:
+                    type: string
+                    example: 'main-street-123-a1b2'
+                  streetName:
+                    type: string
+                    example: 'Main Street'
+                  streetNumber:
+                    type: string
+                    example: '123'
+                  towersData:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: '64f9a5b7c2e4d3a9b8a0e1f5'
+                        friendlyId:
+                          type: string
+                          example: 'main-street-123-a1b2-abc1'
+                        floorsNumber:
+                          type: number
+                          example: 10
+                        premisesAmount:
+                          type: number
+                          example: 5
+                        functionalUnitsData:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: '64f9a5b7c2e4d3a9b8a0e1f6'
+                              friendlyId:
+                                type: string
+                                example: 'main-street-123-a1b2-abc1-def2'
+                              name:
+                                type: string
+                                example: 'Functional Unit 1A'
+                              type:
+                                type: string
+                                enum: ['APARTMENT', 'PREMISE']
+                                example: 'APARTMENT'
+                              occupied:
+                                type: boolean
+                                example: false
+                              ownerUserId:
+                                type: string
+                                example: '64f9a5b7c2e4d3a9b8a0e1f9'
+                              tenantUserId:
+                                type: string
+                                example: '64f9a5b7c2e4d3a9b8a0e1f8'
+        '500':
+          description: Error creating full building

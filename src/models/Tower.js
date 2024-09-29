@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 const TowerSchema = new mongoose.Schema({
+	buildingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Building' },
 	friendlyId: {
 		type: String,
 		required: true
@@ -14,7 +15,7 @@ const TowerSchema = new mongoose.Schema({
 		type: Number,
 		default: 0
 	},
-	floorsData: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FunctionalUnit' }]
+	functionalUnitsData: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FunctionalUnit' }]
 })
 
 module.exports = mongoose.model('Tower', TowerSchema)

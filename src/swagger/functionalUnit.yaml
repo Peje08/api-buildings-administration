@@ -1,0 +1,221 @@
+paths:
+  /functional-units:
+    post:
+      summary: Create a new functional unit
+      description: Creates a new functional unit associated with a tenant or an owner.
+      tags:
+        - FunctionalUnit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tenantUserId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f7'
+                  description: Optional, ID of the tenant user.
+                ownerUserId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f8'
+                  description: Optional, ID of the owner user.
+                towerId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f6'
+                  description: Optional, ID of the tower.
+                name:
+                  type: string
+                  example: 'Functional Unit 1A'
+                type:
+                  type: string
+                  enum: ['APARTMENT', 'PREMISE']
+                  example: 'APARTMENT'
+                occupied:
+                  type: boolean
+                  example: false
+      responses:
+        '201':
+          description: Functional unit created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f9'
+                  friendlyId:
+                    type: string
+                    example: 'fu-1a-a1b2'
+                  tenantUserId:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f7'
+                  ownerUserId:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f8'
+                  name:
+                    type: string
+                    example: 'Functional Unit 1A'
+                  type:
+                    type: string
+                    example: 'APARTMENT'
+                  occupied:
+                    type: boolean
+                    example: false
+        '500':
+          description: Error creating functional unit
+
+    get:
+      summary: Get all functional units
+      description: Retrieves all functional units.
+      tags:
+        - FunctionalUnit
+      responses:
+        '200':
+          description: List of functional units
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: '64f9a5b7c2e4d3a9b8a0e1f9'
+                    friendlyId:
+                      type: string
+                      example: 'fu-1a-a1b2'
+                    name:
+                      type: string
+                      example: 'Functional Unit 1A'
+                    tenantUserId:
+                      type: string
+                      example: '64f9a5b7c2e4d3a9b8a0e1f7'
+                    ownerUserId:
+                      type: string
+                      example: '64f9a5b7c2e4d3a9b8a0e1f8'
+                    type:
+                      type: string
+                      example: 'APARTMENT'
+                    occupied:
+                      type: boolean
+                      example: false
+        '500':
+          description: Error retrieving functional units
+
+  /functional-units/{id}:
+    get:
+      summary: Get functional unit by ID
+      description: Retrieves a specific functional unit by its ID.
+      tags:
+        - FunctionalUnit
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f9'
+          description: The ID of the functional unit
+      responses:
+        '200':
+          description: Functional unit retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f9'
+                  friendlyId:
+                    type: string
+                    example: 'fu-1a-a1b2'
+                  tenantUserId:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f7'
+                  ownerUserId:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f8'
+                  name:
+                    type: string
+                    example: 'Functional Unit 1A'
+                  type:
+                    type: string
+                    example: 'APARTMENT'
+                  occupied:
+                    type: boolean
+                    example: false
+        '404':
+          description: Functional unit not found
+        '500':
+          description: Error retrieving functional unit
+
+    put:
+      summary: Update a functional unit by ID
+      description: Updates the details of a specific functional unit by its ID.
+      tags:
+        - FunctionalUnit
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f9'
+          description: The ID of the functional unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tenantUserId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f7'
+                  description: Optional, ID of the tenant user.
+                ownerUserId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f8'
+                  description: Optional, ID of the owner user.
+                name:
+                  type: string
+                  example: 'Functional Unit 1A'
+                type:
+                  type: string
+                  enum: ['APARTMENT', 'PREMISE']
+                  example: 'APARTMENT'
+                occupied:
+                  type: boolean
+                  example: false
+      responses:
+        '200':
+          description: Functional unit updated successfully
+        '404':
+          description: Functional unit not found
+        '500':
+          description: Error updating functional unit
+
+    delete:
+      summary: Delete a functional unit by ID
+      description: Deletes a specific functional unit by its ID.
+      tags:
+        - FunctionalUnit
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f9'
+          description: The ID of the functional unit
+      responses:
+        '200':
+          description: Functional unit deleted successfully
+        '404':
+          description: Functional unit not found
+        '500':
+          description: Error deleting functional unit

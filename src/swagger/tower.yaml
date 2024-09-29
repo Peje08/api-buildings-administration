@@ -1,0 +1,193 @@
+paths:
+  /towers:
+    post:
+      summary: Create a new tower
+      description: Creates a new tower with the provided details.
+      tags:
+        - Tower
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                buildingId:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f7'
+                floorsNumber:
+                  type: number
+                  example: 10
+                premisesAmount:
+                  type: number
+                  example: 5
+                functionalUnits:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: 'Functional Unit 1A'
+                      type:
+                        type: string
+                        enum: ['APARTMENT', 'PREMISE']
+                        example: 'APARTMENT'
+                      occupied:
+                        type: boolean
+                        example: false
+      responses:
+        '201':
+          description: Tower created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f7'
+                  friendlyId:
+                    type: string
+                    example: 'tower-1-a1b2'
+                  floorsNumber:
+                    type: number
+                    example: 10
+                  premisesAmount:
+                    type: number
+                    example: 5
+                  buildingId:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f7'
+        '500':
+          description: Error creating tower
+
+    get:
+      summary: Get all towers
+      description: Retrieves all towers.
+      tags:
+        - Tower
+      responses:
+        '200':
+          description: List of towers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: '64f9a5b7c2e4d3a9b8a0e1f7'
+                    friendlyId:
+                      type: string
+                      example: 'tower-1-a1b2'
+                    floorsNumber:
+                      type: number
+                      example: 10
+                    premisesAmount:
+                      type: number
+                      example: 5
+                    buildingId:
+                      type: string
+                      example: '64f9a5b7c2e4d3a9b8a0e1f7'
+        '500':
+          description: Error retrieving towers
+
+  /towers/{id}:
+    get:
+      summary: Get tower by ID
+      description: Retrieves a specific tower by its ID.
+      tags:
+        - Tower
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f7'
+          description: The ID of the tower
+      responses:
+        '200':
+          description: Tower retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f7'
+                  friendlyId:
+                    type: string
+                    example: 'tower-1-a1b2'
+                  floorsNumber:
+                    type: number
+                    example: 10
+                  premisesAmount:
+                    type: number
+                    example: 5
+                  buildingId:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f7'
+        '404':
+          description: Tower not found
+        '500':
+          description: Error retrieving tower
+
+    put:
+      summary: Update a tower by ID
+      description: Updates the details of a specific tower by its ID.
+      tags:
+        - Tower
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f7'
+          description: The ID of the tower
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                floorsNumber:
+                  type: number
+                  example: 15
+                premisesAmount:
+                  type: number
+                  example: 8
+      responses:
+        '200':
+          description: Tower updated successfully
+        '404':
+          description: Tower not found
+        '500':
+          description: Error updating tower
+
+    delete:
+      summary: Delete a tower by ID
+      description: Deletes a specific tower by its ID.
+      tags:
+        - Tower
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f7'
+          description: The ID of the tower
+      responses:
+        '200':
+          description: Tower deleted successfully
+        '404':
+          description: Tower not found
+        '500':
+          description: Error deleting tower
