@@ -14,7 +14,7 @@ exports.createAdministration = async (req, res) => {
 		}
 
 		// Generate a friendlyId using the name and the last 4 characters of ownerId
-		const friendlyId = `${name.toLowerCase().replace(/\s+/g, '-')}-${ownerId.slice(-4)}`
+		const friendlyId = `${ownerId.slice(-4)}`
 
 		const newAdministration = new Administration({
 			name,

@@ -12,17 +12,21 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.use('/api', routes)
-app.use('/', (req, res) => res.send('Welcome to API Buildings Administration - CABILDO'))
 
-app.use((req, res, next) => {
-	res.status(404).json({ error: 'Ruta no encontrada' })
+// Root path handler
+app.get('/', (req, res) => {
+	res.send('Welcome to API Buildings Administration - CABILDO')
 })
 
+// Catch all for undefined routes (404 handler)
+app.use((req, res, next) => {
+	res.status(404).json({ error: 'Route not found' })
+})
+
+// General error handler for other server errors
 app.use((err, req, res, next) => {
 	console.error(err.stack)
-	res.status(500).json({ error: 'Error del servidor' })
+	res.status(500).json({ error: 'Server error' })
 })
-
-app.use((req, res) => res.status(404).json({ code: 404, message: 'Not Found' }))
 
 module.exports = app
