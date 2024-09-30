@@ -1,14 +1,20 @@
-import { Box, Button, useColorMode } from '@chakra-ui/react'
+import { Container } from '@chakra-ui/react'
+import { colors } from './constants/colors'
+import { Login } from './components/Login'
 
 function App() {
-  const { colorMode, toggleColorMode } = useColorMode()
-
   return (
-    <Box textAlign="center" p={5}>
-      <Button onClick={toggleColorMode}>
-        Cambiar a {colorMode === 'light' ? 'oscuro' : 'claro'}
-      </Button>
-    </Box>
+    <>
+      <Container
+        bg={colors.adminBackground}
+        maxW="100%"
+        height="100vh"
+        border="1px"
+        borderColor="#236A62"
+      >
+        <Login />
+      </Container>
+    </>
   )
 }
 
