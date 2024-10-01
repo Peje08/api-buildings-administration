@@ -11,5 +11,12 @@ export const strings = {
   expensas, recibos de pagos, anuncios, reclamos, solicitudes y gastos del
   consorcio, entre otras funcionalidades.`,
   welcome: 'Bienvenido a Cabildo',
-  nameAndSurname: 'Nombre y Apellido'
+  nameAndSurname: 'Nombre y Apellido',
+  validateMail: 'Por favor, ingrese un email válido',
+  notMatchingPasswords: 'Las contraseñas no coinciden',
+  user: 'Usuario',
+  mail: 'Mail',
+  password: 'Contraseña',
+  confirmPassword: 'Confirmar contraseña',
+  remainingCharacters: 'caracteres restantes'
 }
