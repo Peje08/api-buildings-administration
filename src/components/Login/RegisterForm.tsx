@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   VStack,
   Input,
@@ -9,72 +9,35 @@ import {
   FormErrorMessage,
   Flex,
   useToast,
-} from '@chakra-ui/react';
-import axios from 'axios';
-import { strings } from '../../constants/strings';
-import { useFormHandler } from '../../utils/useFormHandler';
+} from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom' // Importar useNavigate para la redirección
+import { strings } from '../../constants/strings'
+import { useFormHandler } from '../../utils/useFormHandler'
+import { handleRegister } from '../../utils/registerUtils' // Importamos la función desde utils
 
 interface RegisterFormProps {
-  onCancelClick: () => void;
+  onCancelClick: () => void
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onCancelClick }) => {
-  const { formData, errors, handleChange } = useFormHandler();
-  const [loading, setLoading] = useState(false); // Estado de carga
-  const toast = useToast(); // Para notificaciones
+  const { formData, errors, handleChange } = useFormHandler()
+  const [loading, setLoading] = useState(false) // Estado de carga
+  const toast = useToast() // Para notificaciones
+  const navigate = useNavigate() // Instanciamos useNavigate para redirigir
 
-  // Función para manejar el registro
-  const handleRegister = async () => {
-    setLoading(true);
-    console.log("Data to be sent:", formData);  // Verificar los valores enviados
-    try {
-      const response = await axios.post(
-        'https://api-buildings-administration.onrender.com/api/user/register',
-        {
-          name: formData.username, // El input "username" llena "name"
-          email: formData.email,   // El input "email" llena "email"
-          password: formData.password, // El input "password" llena "password"
-        }
-      );
-  
-      // Aquí puedes utilizar `response.data` si es necesario
-      console.log('API Response:', response.data);
-  
-      // Si el registro es exitoso
-      toast({
-        title: 'Registro exitoso',
-        description: 'Usuario registrado con éxito.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
-  
-      // Redirigir o hacer otra acción con `response.data` si lo necesitas
-      // Por ejemplo, redirigir al dashboard:
-      // navigate('/dashboard'); 
-  
-    } catch (error) {
-      let errorMessage = 'Hubo un problema al registrar el usuario.';
-  
-      // Verificamos si el error es una instancia de AxiosError
-      if (axios.isAxiosError(error)) {
-        console.error("Error details:", error.response?.data); // Mostrar más detalles en la consola
-        errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
-      }
-  
-      // Mostrar más detalles en el toast
-      toast({
-        title: 'Error en el registro',
-        description: errorMessage,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-  
+  const handleSubmit = async () => {
+    console.log('Handling register submit...')
+    await handleRegister(
+      {
+        name: formData.username,
+        email: formData.email,
+        password: formData.password,
+      },
+      setLoading,
+      toast,
+      navigate // Pasamos navigate a la función handleRegister
+    )
+  }
 
   return (
     <VStack spacing={4} width="100%">
@@ -126,16 +89,18 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onCancelClick }) => {
           name="confirmPassword"
           onChange={handleChange}
         />
-        {errors.password && <FormErrorMessage>{errors.password}</FormErrorMessage>}
+        {errors.password && (
+          <FormErrorMessage>{errors.password}</FormErrorMessage>
+        )}
       </FormControl>
 
       <HStack spacing={4} width="100%">
         <Button
           colorScheme="teal"
           width="100%"
-          onClick={handleRegister}  // Llamamos a la función de registro
-          isLoading={loading}        // Muestra el spinner de carga si está cargando
-          isDisabled={!!errors.email || !!errors.password || loading}  // Deshabilita si hay errores o si está cargando
+          onClick={handleSubmit} // Llamamos a la función de registro
+          isLoading={loading} // Muestra el spinner de carga si está cargando
+          isDisabled={!!errors.email || !!errors.password || loading} // Deshabilita si hay errores o si está cargando
         >
           {strings.accept}
         </Button>
@@ -144,7 +109,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onCancelClick }) => {
         </Button>
       </HStack>
     </VStack>
-  );
-};
+  )
+}
 
-export default RegisterForm;
+export default RegisterForm

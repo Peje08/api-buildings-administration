@@ -18,5 +18,7 @@ export const strings = {
   mail: 'Mail',
   password: 'Contraseña',
   confirmPassword: 'Confirmar contraseña',
-  remainingCharacters: 'caracteres restantes'
+  remainingCharacters: 'caracteres restantes',
+  login: 'Iniciar Sesión',
+  register: 'Regístrate aquí'
 }
