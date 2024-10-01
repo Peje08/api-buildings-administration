@@ -24,7 +24,7 @@ export const handleRegister = async (
         type: formData.type || 'ADMINISTRATION',
       }
     )
-
+    console.log('API Response:', response.data)
     // Si el registro es exitoso
     toast({
       title: 'Registro exitoso',

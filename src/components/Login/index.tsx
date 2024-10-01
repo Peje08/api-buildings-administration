@@ -34,7 +34,6 @@ const LoginPage: React.FC = () => {
         height="500px"
         borderWidth="1px"
         borderRadius="lg"
-        overflow="hidden"
         bg="white"
         display="flex"
         flexDirection="row"
