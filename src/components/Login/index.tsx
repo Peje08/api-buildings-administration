@@ -1,35 +1,54 @@
-import {
-  Container,
-  Grid,
-  GridItem,
-  Image,
-  Input,
-  InputGroup,
-  InputLeftAddon,
-  Text,
-} from '@chakra-ui/react'
-import { colors } from '../../constants/colors'
-import { icons } from '../../constants/icons'
-import { strings } from '../../constants/strings'
+import React, { useState } from 'react';
+import { Box, Flex } from '@chakra-ui/react';
+import AuthContainer from './AuthContainer';
+import RegisterForm from './RegisterForm';
+import LoginForm from './LoginForm';
 
-export const Login = () => {
+const LoginPage: React.FC = () => {
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  const handleRegisterClick = () => setIsRegistering(true);
+  const handleCancelClick = () => setIsRegistering(false);
+
   return (
-    <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-      <GridItem w="100%" h="10" bg={colors.adminBackground}>
-        <Container centerContent>
-          <Image src={icons.cabildo} />
-          <Text>{strings.presentationText}</Text>
-        </Container>
-      </GridItem>
-      <GridItem w="100%" h="10" bg={colors.adminBackground}>
-        <InputGroup>
-          <InputLeftAddon>Nombre y Apellido</InputLeftAddon>
-          <Input
-            placeholder='asdasdasdasdada'
-            _placeholder={{ opacity: .5, color: colors.textColor }}
-          />
-        </InputGroup>
-      </GridItem>
-    </Grid>
-  )
-}
+    <Flex
+      direction="row"
+      justify="center"
+      align="center"
+      height="100vh"
+      bg="gray.50"
+    >
+      <Box
+        width="60%"
+        height="500px"
+        borderWidth="1px"
+        borderRadius="lg"
+        overflow="hidden"
+        bg="white"
+        display="flex"
+        flexDirection="row"
+        boxShadow="md"
+      >
+        {/* Contenedor con texto e icono */}
+        <AuthContainer />
+
+        {/* Formulario: Login o Registro según el estado */}
+        <Flex
+          direction="column"
+          align="center"
+          justify="center"
+          width="50%"
+          padding="8"
+        >
+          {isRegistering ? (
+            <RegisterForm onCancelClick={handleCancelClick} />
+          ) : (
+            <LoginForm onRegisterClick={handleRegisterClick} />
+          )}
+        </Flex>
+      </Box>
+    </Flex>
+  );
+};
+
+export default LoginPage;

@@ -1,6 +1,6 @@
 import { Container } from '@chakra-ui/react'
 import { colors } from './constants/colors'
-import { Login } from './components/Login'
+import  LoginPage  from './components/Login'
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         border="1px"
         borderColor="#236A62"
       >
-        <Login />
+        <LoginPage />
       </Container>
     </>
   )
