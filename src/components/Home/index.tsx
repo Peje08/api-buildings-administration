@@ -10,7 +10,7 @@ const Home: React.FC = () => {
   const userName = 'Administración de Consorcios Pepito Cibrián S.A.'
 
   return (
-    <Flex direction="column" height="100vh"  bg={colors.adminBackground}>
+    <Flex direction="column" height="100vh" bg={colors.adminBackground}>
       <Header />
 
       {/* Administración */}
@@ -26,7 +26,7 @@ const Home: React.FC = () => {
         <AdministrationBadge name={userName} />
       </Flex>
 
-      <Flex flex="1">
+      <Flex flex="1" >
         <Sidebar />
         <MainPanel />
       </Flex>

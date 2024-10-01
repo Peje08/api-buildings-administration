@@ -5,10 +5,10 @@ import { strings } from '../../constants/strings'
 const StreetInput: React.FC = () => {
   return (
     <Flex align="center" width="100%">
-      <Text width="30%">{strings.street}</Text>
+      <Text width="10%" fontWeight={'bold'}>{strings.street}</Text>
       <Input
         placeholder={strings.enterStreet}
-        width="70%"
+        width="90%"
         isRequired
         aria-required="true"
       />

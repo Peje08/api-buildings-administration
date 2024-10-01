@@ -1,12 +1,9 @@
 import React, { useState } from 'react'
-import { VStack, HStack, Button, Icon } from '@chakra-ui/react'
-import { FaClone, FaPlus } from 'react-icons/fa'
+import { VStack, HStack, } from '@chakra-ui/react'
 import { colors } from '../../constants/colors'
-import { strings } from '../../constants/strings'
 import StreetInput from './StreetInput'
 import TowerAccordion from './TowerAccordion'
 import ActionButtons from './ActionButtons'
-import FloorsInput from './FloorsInput'
 import BuildingNumberInput from './NumberInputField'
 
 interface BuildingConfigurationProps {
@@ -42,7 +39,7 @@ const BuildingConfiguration: React.FC<BuildingConfigurationProps> = ({
     <VStack
       spacing={6}
       align="center"
-      width="60%"
+      width="100%"
       p={15}
       bg={colors.inputBackground}
       border="1px"
@@ -67,8 +64,6 @@ const BuildingConfiguration: React.FC<BuildingConfigurationProps> = ({
         pisosValues={pisosValues}
         handlePisoChange={handlePisoChange}
       />
-
-     
 
       <ActionButtons onCancel={onCancel} />
     </VStack>

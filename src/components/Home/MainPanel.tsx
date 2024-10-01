@@ -3,6 +3,7 @@ import { Flex, Button, Icon } from '@chakra-ui/react'
 import { FaPen } from 'react-icons/fa'
 import { strings } from '../../constants/strings'
 import BuildingConfiguration from '../Buildings'
+import { colors } from '../../constants/colors'
 
 const MainPanel: React.FC = () => {
   const [isConfiguring, setIsConfiguring] = useState(false)
@@ -13,12 +14,26 @@ const MainPanel: React.FC = () => {
   }
 
   return (
-    <Flex flex="1" justify="center" align="center">
+    <Flex
+      flex="1"
+      justify="center"
+      align="center"
+      width="100%"
+      height="100%"
+      bg={colors.adminBackground}
+      position={'relative'}
+    >
       {isConfiguring ? (
-        // Si se está configurando, mostrar el componente de configuración
-        <BuildingConfiguration onCancel={handleCancel} />
+        <Flex
+          width="100%"
+          maxWidth="1200px"
+          height="100%" // Mantener la altura al 100% del panel
+          flexDirection="column"
+          p={'1rem'}
+        >
+          <BuildingConfiguration onCancel={handleCancel} />
+        </Flex>
       ) : (
-        // Si no se está configurando, mostrar el botón de "Configurar Edificio"
         <Button
           leftIcon={<Icon as={FaPen} />}
           colorScheme="teal"

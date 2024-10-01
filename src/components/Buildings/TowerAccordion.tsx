@@ -44,7 +44,7 @@ const TowerAccordion: React.FC<TowerAccordionProps> = ({
 }) => {
   return (
     <Accordion allowToggle width="95%">
-      <AccordionItem>
+      <AccordionItem overflowY={'scroll'} maxHeight={'25rem'}>
         <h2>
           <AccordionButton _expanded={{ bg: colors.badge, color: 'white' }}>
             <Box flex="1" textAlign="left">
@@ -53,7 +53,7 @@ const TowerAccordion: React.FC<TowerAccordionProps> = ({
             <AccordionIcon />
           </AccordionButton>
         </h2>
-        <AccordionPanel pb={4}>
+        <AccordionPanel pb={4} >
           {/* Piso, Local, Pisos Iguales, y Letras/Números */}
           <HStack width="100%" spacing={6} alignItems="center" mb={4}>
             <HStack>
