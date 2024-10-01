@@ -6,13 +6,7 @@ import { Routes, Route, Navigate } from 'react-router-dom' // Importa Navigate p
 
 function App() {
   return (
-    <Container
-      bg={colors.adminBackground}
-      maxW="100%"
-      height="100vh"
-      border="1px"
-      borderColor="#236A62"
-    >
+    <Container bg={colors.adminBackground} maxW="100%" height="100vh" p={.5}>
       <Routes>
         {/* Redirigir de "/" a "/login" */}
         <Route path="/" element={<Navigate to="/login" replace />} />

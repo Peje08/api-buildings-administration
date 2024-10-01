@@ -22,5 +22,21 @@ export const strings = {
   login: 'Iniciar Sesión',
   register: 'Regístrate aquí',
   logout: 'Cerrar Sesión',
-  setBuilding: 'Configurar Edificio'
+  setBuilding: 'Configurar Edificio',
+  street: 'Calle',
+  number: 'Número',
+  floors: 'Pisos',
+  premise: 'Local',
+  letters: 'Letras',
+  numbers: 'Números',
+  groundFloor: 'Planta Baja',
+  duplicateTower: 'Duplicar Torre',
+  addTower: 'Agregar Torre',
+  plan: 'Plan',
+  enterStreet: 'Ingrese la Calle',
+  enterNumber: 'Ingrese el Número',
+  tower: 'Torre',
+  planDetails: 'El plan se completará automáticamente luego de seleccionar las UF',
+  sameFloors: 'Pisos Iguales',
+  floor: 'Piso'
 }

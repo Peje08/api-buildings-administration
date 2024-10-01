@@ -7,7 +7,6 @@ interface LoginData {
   password: string
 }
 
-// La función de login modularizada
 export const handleLogin = async (
   loginData: LoginData,
   setLoading: (loading: boolean) => void,
@@ -25,11 +24,9 @@ export const handleLogin = async (
     )
 
     if (response.data.accessToken) {
-      // Guardar el token en el almacenamiento local
       localStorage.setItem('token', response.data.accessToken)
       localStorage.setItem('name', response.data.name)
 
-      // Redirigir a la página principal /home
       navigate('/home')
     } else {
       throw new Error('No se recibió un token')
@@ -46,4 +43,10 @@ export const handleLogin = async (
   } finally {
     setLoading(false)
   }
+}
+
+export const handleLogout = (navigate: NavigateFunction) => {
+  localStorage.removeItem('token')
+
+  navigate('/login')
 }

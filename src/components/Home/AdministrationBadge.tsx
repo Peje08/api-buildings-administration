@@ -7,7 +7,7 @@ const AdministrationBadge: React.FC<{ name: string }> = ({ name }) => {
   return (
     <Badge
       bg={colors.badge}
-      p={2}
+      p={3}
       borderRadius="4px"
       minWidth="150px"
       maxWidth="100%"
@@ -15,7 +15,7 @@ const AdministrationBadge: React.FC<{ name: string }> = ({ name }) => {
       <HStack>
         <Icon as={FaBuilding} boxSize={6} fill={colors.badgeColorText} />
         <Text
-          fontSize="lg"
+          fontSize="1.2rem"
           textAlign="right"
           fontWeight="600"
           textTransform="none"

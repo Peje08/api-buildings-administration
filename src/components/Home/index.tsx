@@ -7,10 +7,10 @@ import MainPanel from './MainPanel'
 import { colors } from '../../constants/colors'
 
 const Home: React.FC = () => {
-  const userName = 'Pepito Cibrián S.A.'
+  const userName = 'Administración de Consorcios Pepito Cibrián S.A.'
 
   return (
-    <Flex direction="column" height="100vh" bg="gray.50">
+    <Flex direction="column" height="100vh"  bg={colors.adminBackground}>
       <Header />
 
       {/* Administración */}
@@ -21,7 +21,7 @@ const Home: React.FC = () => {
         bg={colors.adminBackground}
         borderBottom="2px"
         borderColor={colors.verticalDivider}
-        height="64px"
+        height="7rem"
       >
         <AdministrationBadge name={userName} />
       </Flex>
