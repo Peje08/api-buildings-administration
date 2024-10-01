@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   VStack,
   Input,
@@ -8,9 +8,12 @@ import {
   FormControl,
   FormErrorMessage,
   Flex,
+  useToast,
 } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom' // Importar useNavigate para la redirección
 import { strings } from '../../constants/strings'
 import { useFormHandler } from '../../utils/useFormHandler'
+import { handleRegister } from '../../utils/registerUtils' // Importamos la función desde utils
 
 interface RegisterFormProps {
   onCancelClick: () => void
@@ -18,6 +21,23 @@ interface RegisterFormProps {
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onCancelClick }) => {
   const { formData, errors, handleChange } = useFormHandler()
+  const [loading, setLoading] = useState(false) // Estado de carga
+  const toast = useToast() // Para notificaciones
+  const navigate = useNavigate() // Instanciamos useNavigate para redirigir
+
+  const handleSubmit = async () => {
+    console.log('Handling register submit...')
+    await handleRegister(
+      {
+        name: formData.username,
+        email: formData.email,
+        password: formData.password,
+      },
+      setLoading,
+      toast,
+      navigate // Pasamos navigate a la función handleRegister
+    )
+  }
 
   return (
     <VStack spacing={4} width="100%">
@@ -32,7 +52,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onCancelClick }) => {
         />
         <Flex justify="flex-end">
           <Text fontSize="sm" color="gray.500">
-            {40 - formData.username.length} {strings.remainingCharacters}
+            {30 - formData.username.length} {strings.remainingCharacters}
           </Text>
         </Flex>
       </FormControl>
@@ -78,7 +98,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onCancelClick }) => {
         <Button
           colorScheme="teal"
           width="100%"
-          isDisabled={!!errors.email || !!errors.password}
+          onClick={handleSubmit} // Llamamos a la función de registro
+          isLoading={loading} // Muestra el spinner de carga si está cargando
+          isDisabled={!!errors.email || !!errors.password || loading} // Deshabilita si hay errores o si está cargando
         >
           {strings.accept}
         </Button>
