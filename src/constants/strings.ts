@@ -20,5 +20,7 @@ export const strings = {
   confirmPassword: 'Confirmar contraseña',
   remainingCharacters: 'caracteres restantes',
   login: 'Iniciar Sesión',
-  register: 'Regístrate aquí'
+  register: 'Regístrate aquí',
+  logout: 'Cerrar Sesión',
+  setBuilding: 'Configurar Edificio'
 }
