@@ -11,14 +11,16 @@ import {
 	NumberInputField,
 	Checkbox,
 	Switch,
-	VStack
+	VStack,
+	Button
 } from '@chakra-ui/react'
 import { colors } from '../../constants/colors'
 import { strings } from '../../constants/strings'
+import { FaTrash } from 'react-icons/fa'
 
 interface TowerAccordionProps {
+	towerName: string
 	pisos: number
-	handlePisosChange: (value: number) => void
 	localChecked: boolean
 	setLocalChecked: (value: boolean) => void
 	pisosIguales: boolean
@@ -27,9 +29,13 @@ interface TowerAccordionProps {
 	setIsLetras: (value: boolean) => void
 	pisosValues: string[]
 	handlePisoChange: (value: string, index: number) => void
+	handlePisosChange: (value: number) => void
+	onRemoveTower: () => void
+	showRemoveButton: boolean
 }
 
 const TowerAccordion: React.FC<TowerAccordionProps> = ({
+	towerName,
 	pisos,
 	handlePisosChange,
 	localChecked,
@@ -39,15 +45,17 @@ const TowerAccordion: React.FC<TowerAccordionProps> = ({
 	isLetras,
 	setIsLetras,
 	pisosValues,
-	handlePisoChange
+	handlePisoChange,
+	onRemoveTower,
+	showRemoveButton
 }) => {
 	return (
 		<Accordion allowToggle width='95%'>
-			<AccordionItem overflowY={'scroll'} maxHeight={'25rem'}>
+			<AccordionItem overflowY={'scroll'} maxH={450}>
 				<h2>
 					<AccordionButton _expanded={{ bg: colors.badge, color: 'white' }}>
 						<Box flex='1' textAlign='left'>
-							<Text fontWeight='bold'>{strings.tower} 1</Text>
+							<Text fontWeight='bold'>{towerName}</Text>
 						</Box>
 						<AccordionIcon />
 					</AccordionButton>
@@ -58,10 +66,10 @@ const TowerAccordion: React.FC<TowerAccordionProps> = ({
 						<HStack>
 							<Text>{strings.floors}</Text>
 							<NumberInput
-								min={0} // Cambiado a 0 para permitir que no haya pisos adicionales
+								min={0}
 								max={100}
 								value={pisos}
-								onChange={(valueString) => handlePisosChange(Number(valueString))}
+								onChange={(_, valueAsNumber) => handlePisosChange(valueAsNumber)}
 								width='50%'
 								isRequired
 								aria-required='true'
@@ -137,6 +145,19 @@ const TowerAccordion: React.FC<TowerAccordionProps> = ({
 								</HStack>
 							))}
 					</VStack>
+
+					{/* Mostrar botón de eliminar solo si es Torre 2 en adelante */}
+					{showRemoveButton && (
+						<Button
+							mt={4}
+							colorScheme='red'
+							leftIcon={<FaTrash />}
+							onClick={onRemoveTower}
+							alignSelf='flex-end'
+						>
+							{strings.removeTower}
+						</Button>
+					)}
 				</AccordionPanel>
 			</AccordionItem>
 		</Accordion>

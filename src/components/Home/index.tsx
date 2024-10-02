@@ -10,7 +10,7 @@ const Home: React.FC = () => {
   const userName = 'Administración de Consorcios Pepito Cibrián S.A.'
 
   return (
-    <Flex direction="column" height="100vh" bg={colors.adminBackground}>
+    <Flex direction="column" height="100vh" bg={colors.adminBackground} overflowY={'hidden'}>
       <Header />
 
       {/* Administración */}

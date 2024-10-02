@@ -21,7 +21,7 @@ const MainPanel: React.FC = () => {
       width="100%"
       height="100%"
       bg={colors.adminBackground}
-      position={'relative'}
+     // position={'relative'}
     >
       {isConfiguring ? (
         <Flex
