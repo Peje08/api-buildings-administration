@@ -38,5 +38,6 @@ export const strings = {
   tower: 'Torre',
   planDetails: 'El plan se completará automáticamente luego de seleccionar las UF',
   sameFloors: 'Pisos Iguales',
-  floor: 'Piso'
+  floor: 'Piso',
+  removeTower: 'Eliminar Torre'
 }

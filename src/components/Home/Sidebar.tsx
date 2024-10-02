@@ -15,7 +15,6 @@ const Sidebar: React.FC = () => {
       p={4}
       bg={colors.adminBackground}
       borderRight="2px"
-
       borderColor={colors.verticalDivider}
       spacing={8}
       width="15%"

@@ -4,9 +4,10 @@ import { strings } from '../../constants/strings'
 
 interface ActionButtonsProps {
   onCancel: () => void
+  onAddTower: () => void // Nuevo prop para agregar torre
 }
 
-const ActionButtons: React.FC<ActionButtonsProps> = ({ onCancel }) => {
+const ActionButtons: React.FC<ActionButtonsProps> = ({ onCancel, onAddTower }) => {
   return (
     <>
       {/* Botones para Duplicar y Agregar Torre */}
@@ -22,6 +23,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ onCancel }) => {
           leftIcon={<Icon as={FaPlus} />}
           colorScheme="teal"
           variant="solid"
+          onClick={onAddTower}
         >
           {strings.addTower}
         </Button>
