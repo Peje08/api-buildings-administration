@@ -1,4 +1,3 @@
-import React from 'react'
 import { Flex, HStack, Heading, Text } from '@chakra-ui/react'
 import { ReactSVG } from 'react-svg'
 import { icons } from '../../constants/icons'

@@ -7,10 +7,10 @@ export const handleRegister = async (
   formData: RegisterData,
   setLoading: (loading: boolean) => void,
   toast: ReturnType<typeof useToast>,
-  navigate: NavigateFunction // Ahora aceptamos navigate como argumento
+  navigate: NavigateFunction
 ) => {
   setLoading(true)
-  console.log('Data to be sent:', formData) // Verificar los valores enviados
+  console.log('Data to be sent:', formData)
   try {
     // Llamamos a la función `registerUser` que hemos separado
     const response = await axios.post(
@@ -34,8 +34,7 @@ export const handleRegister = async (
       isClosable: true,
     })
 
-    console.log('Redirecting to login...') // Verifica si se ejecuta
-    navigate('/login') // Redirigir a la ruta de login
+    navigate('/login')
 
     return response.data
   } catch (error) {
@@ -43,7 +42,7 @@ export const handleRegister = async (
 
     // Verificamos si el error es una instancia de AxiosError
     if (axios.isAxiosError(error)) {
-      console.error('Error details:', error.response?.data) // Mostrar más detalles en la consola
+      console.error('Error details:', error.response?.data)
       errorMessage =
         error.response?.data?.message || error.message || 'Error desconocido'
     }

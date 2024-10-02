@@ -1,8 +1,8 @@
 import { Container } from '@chakra-ui/react'
 import { colors } from './constants/colors'
 import LoginPage from './components/Login'
-import Home from './components/Home' // Importa el componente Home
-import { Routes, Route, Navigate } from 'react-router-dom' // Importa Navigate para redirigir
+import Home from './components/Home'
+import { Routes, Route, Navigate } from 'react-router-dom'
 
 function App() {
   return (

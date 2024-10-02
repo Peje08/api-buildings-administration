@@ -1,4 +1,3 @@
-import React from 'react'
 import { VStack, Button, Flex, Icon } from '@chakra-ui/react'
 import { FaSignOutAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom' 

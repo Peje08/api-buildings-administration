@@ -1,4 +1,3 @@
-import React from 'react'
 import { HStack, Button, Icon } from '@chakra-ui/react'
 import { FaClone, FaPlus } from 'react-icons/fa'
 import { strings } from '../../constants/strings'

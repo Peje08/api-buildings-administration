@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { VStack, HStack, } from '@chakra-ui/react'
 import { colors } from '../../constants/colors'
 import StreetInput from './StreetInput'

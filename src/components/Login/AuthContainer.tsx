@@ -1,9 +1,8 @@
-import React from 'react';
-import { Flex, Text } from '@chakra-ui/react';
-import { ReactSVG } from 'react-svg';
-import { icons } from '../../constants/icons';
-import { strings } from '../../constants/strings';
-import { colors } from '../../constants/colors';
+import { Flex, Text } from '@chakra-ui/react'
+import { ReactSVG } from 'react-svg'
+import { icons } from '../../constants/icons'
+import { strings } from '../../constants/strings'
+import { colors } from '../../constants/colors'
 
 const AuthContainer: React.FC = () => {
   return (
@@ -23,7 +22,7 @@ const AuthContainer: React.FC = () => {
         {strings.presentationText}
       </Text>
     </Flex>
-  );
-};
+  )
+}
 
-export default AuthContainer;
+export default AuthContainer

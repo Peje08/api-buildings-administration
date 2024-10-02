@@ -1,4 +1,3 @@
-import React from 'react'
 import { Flex, Text, Input } from '@chakra-ui/react'
 import { strings } from '../../constants/strings'
 
