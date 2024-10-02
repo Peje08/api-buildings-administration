@@ -1,4 +1,3 @@
-import React from 'react'
 import { Badge, HStack, Text, Icon } from '@chakra-ui/react'
 import { FaBuilding } from 'react-icons/fa'
 import { colors } from '../../constants/colors'

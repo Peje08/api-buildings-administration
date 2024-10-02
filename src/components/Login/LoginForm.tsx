@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react'
 import {
   VStack,
   Input,
@@ -15,46 +15,46 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from '@chakra-ui/react';
-import { strings } from '../../constants/strings';
-import { useNavigate } from 'react-router-dom';
-import { handleLogin } from '../../utils/authUtils';
+} from '@chakra-ui/react'
+import { strings } from '../../constants/strings'
+import { useNavigate } from 'react-router-dom'
+import { handleLogin } from '../../utils/authUtils'
 
 interface LoginFormProps {
-  onRegisterClick: () => void;
+  onRegisterClick: () => void
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [recoveryEmail, setRecoveryEmail] = useState('');
-  const toast = useToast();
-  const navigate = useNavigate();
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Para controlar el modal
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [recoveryEmail, setRecoveryEmail] = useState('')
+  const toast = useToast()
+  const navigate = useNavigate()
+  const { isOpen, onOpen, onClose } = useDisclosure() // Para controlar el modal
 
   // Función para iniciar sesión al presionar Enter
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handleSubmit(); // Llamamos a la función de submit cuando se presiona Enter
+      handleSubmit() // Llamamos a la función de submit cuando se presiona Enter
     }
-  };
+  }
 
   const handleSubmit = async () => {
-    await handleLogin({ email, password }, setLoading, toast, navigate);
-  };
+    await handleLogin({ email, password }, setLoading, toast, navigate)
+  }
 
   const handleRecoverySubmit = () => {
-    console.log('Recuperar contraseña para:', recoveryEmail);
-    onClose();
+    console.log('Recuperar contraseña para:', recoveryEmail)
+    onClose()
     toast({
       title: 'Solicitud enviada.',
       description: `Si el correo ${recoveryEmail} está registrado, recibirás instrucciones.`,
       status: 'success',
       duration: 5000,
       isClosable: true,
-    });
-  };
+    })
+  }
 
   return (
     <>
@@ -104,7 +104,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
           <ModalHeader>Recuperar Contraseña</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>Introduce tu correo electrónico para recuperar tu contraseña:</Text>
+            <Text>
+              Introduce tu correo electrónico para recuperar tu contraseña:
+            </Text>
             <Input
               mt={4}
               placeholder="Correo electrónico"
@@ -124,7 +126,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
         </ModalContent>
       </Modal>
     </>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm

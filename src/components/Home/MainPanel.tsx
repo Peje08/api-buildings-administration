@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Flex, Button, Icon } from '@chakra-ui/react'
 import { FaPen } from 'react-icons/fa'
 import { strings } from '../../constants/strings'

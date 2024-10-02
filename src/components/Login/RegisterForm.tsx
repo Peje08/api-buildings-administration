@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
   VStack,
   Input,
@@ -10,10 +10,10 @@ import {
   Flex,
   useToast,
 } from '@chakra-ui/react'
-import { useNavigate } from 'react-router-dom' // Importar useNavigate para la redirección
+import { useNavigate } from 'react-router-dom'
 import { strings } from '../../constants/strings'
 import { useFormHandler } from '../../utils/useFormHandler'
-import { handleRegister } from '../../utils/registerUtils' // Importamos la función desde utils
+import { handleRegister } from '../../utils/registerUtils'
 
 interface RegisterFormProps {
   onCancelClick: () => void
@@ -21,12 +21,11 @@ interface RegisterFormProps {
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onCancelClick }) => {
   const { formData, errors, handleChange } = useFormHandler()
-  const [loading, setLoading] = useState(false) // Estado de carga
-  const toast = useToast() // Para notificaciones
-  const navigate = useNavigate() // Instanciamos useNavigate para redirigir
+  const [loading, setLoading] = useState(false)
+  const toast = useToast()
+  const navigate = useNavigate()
 
   const handleSubmit = async () => {
-    console.log('Handling register submit...')
     await handleRegister(
       {
         name: formData.username,
@@ -35,7 +34,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onCancelClick }) => {
       },
       setLoading,
       toast,
-      navigate // Pasamos navigate a la función handleRegister
+      navigate
     )
   }
 
@@ -45,14 +44,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onCancelClick }) => {
       <FormControl>
         <Input
           placeholder={strings.user}
-          maxLength={30}
+          maxLength={40}
           value={formData.username}
           name="username"
           onChange={handleChange}
         />
         <Flex justify="flex-end">
           <Text fontSize="sm" color="gray.500">
-            {30 - formData.username.length} {strings.remainingCharacters}
+            {40 - formData.username.length} {strings.remainingCharacters}
           </Text>
         </Flex>
       </FormControl>
@@ -98,9 +97,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onCancelClick }) => {
         <Button
           colorScheme="teal"
           width="100%"
-          onClick={handleSubmit} // Llamamos a la función de registro
-          isLoading={loading} // Muestra el spinner de carga si está cargando
-          isDisabled={!!errors.email || !!errors.password || loading} // Deshabilita si hay errores o si está cargando
+          onClick={handleSubmit}
+          isLoading={loading} 
+          isDisabled={!!errors.email || !!errors.password || loading}
         >
           {strings.accept}
         </Button>

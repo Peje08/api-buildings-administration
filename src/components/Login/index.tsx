@@ -1,25 +1,24 @@
-import React from 'react';
-import { Box, Flex } from '@chakra-ui/react';
-import AuthContainer from './AuthContainer';  // Este se mantiene siempre visible
-import LoginForm from './LoginForm';
-import RegisterForm from './RegisterForm';
-import { useNavigate, useLocation } from 'react-router-dom';  // Importamos hooks para manejar la navegación
+import { Box, Flex } from '@chakra-ui/react'
+import AuthContainer from './AuthContainer'
+import LoginForm from './LoginForm'
+import RegisterForm from './RegisterForm'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate()
+  const location = useLocation()
 
   // Detectamos si estamos en /register o /login
-  const isRegistering = location.pathname === '/register';
+  const isRegistering = location.pathname === '/register'
 
   // Funciones para redirigir entre login y register
   const handleRegisterClick = () => {
-    navigate('/register');
-  };
+    navigate('/register')
+  }
 
   const handleCancelClick = () => {
-    navigate('/login');
-  };
+    navigate('/login')
+  }
 
   return (
     <Flex
@@ -58,7 +57,7 @@ const LoginPage: React.FC = () => {
         </Flex>
       </Box>
     </Flex>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage

@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import { HStack, Text, NumberInput, NumberInputField, Checkbox } from '@chakra-ui/react'
 import { strings } from '../../constants/strings'
 
