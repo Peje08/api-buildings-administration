@@ -15,7 +15,8 @@ import {
 	updateIsLetras,
 	handleAccept,
 	updateStreet,
-	updateNumber
+	updateNumber,
+	resetForm 
 } from '../../redux/towerSlice'
 import { strings } from 'constants/strings'
 import { RootState } from 'store/store'
@@ -29,6 +30,11 @@ const BuildingConfiguration: React.FC<{ onCancel: () => void }> = ({ onCancel })
 	const handleSubmit = () => {
 		dispatch(handleAccept()) // Despacha la acción que imprime en consola
 	}
+
+	const handleCancel = () => {
+		dispatch(resetForm()) // Reiniciamos el formulario a sus valores iniciales
+		onCancel() // También llamamos la función onCancel pasada como prop (si existe)
+	  }
 
 	return (
 		<VStack
@@ -106,7 +112,7 @@ const BuildingConfiguration: React.FC<{ onCancel: () => void }> = ({ onCancel })
 
 			{/* Botones para duplicar/agregar torres */}
 			<ActionButtons
-				onCancel={onCancel}
+				onCancel={handleCancel}
 				onAccept={handleSubmit}
 				onAddTower={() => dispatch(addTower())}
 			/>

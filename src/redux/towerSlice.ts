@@ -90,7 +90,10 @@ export const towerSlice = createSlice({
     updateNumber(state, action: PayloadAction<string>) {
       state.number = action.payload
     },
-
+    resetForm() {
+      // Reiniciamos el estado a sus valores iniciales
+      return initialState
+    }
   }
 })
 
@@ -104,7 +107,8 @@ export const {
   updateIsLetras,
   handleAccept,
   updateStreet,
-  updateNumber
+  updateNumber,
+  resetForm
 } = towerSlice.actions
 
 export default towerSlice.reducer
