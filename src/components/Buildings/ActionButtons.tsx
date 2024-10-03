@@ -5,9 +5,10 @@ import { strings } from '../../constants/strings'
 interface ActionButtonsProps {
 	onCancel: () => void
 	onAddTower: () => void
+	onAccept: () => void
 }
 
-const ActionButtons: React.FC<ActionButtonsProps> = ({ onCancel, onAddTower }) => {
+const ActionButtons: React.FC<ActionButtonsProps> = ({ onCancel, onAddTower, onAccept }) => {
 	return (
 		<>
 			<HStack spacing={4} mt={4}>
@@ -16,7 +17,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ onCancel, onAddTower }) =
 					colorScheme='teal'
 					variant='outline'
 					onClick={onAddTower}
-          size={'sm'}
+					size={'sm'}
 				>
 					{strings.addTower}
 				</Button>
@@ -24,7 +25,9 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ onCancel, onAddTower }) =
 
 			{/* Botones de Aceptar y Cancelar */}
 			<HStack spacing={4} mt={4}>
-				<Button colorScheme='teal'>{strings.accept}</Button>
+				<Button colorScheme='teal' onClick={onAccept}>
+					{strings.accept}
+				</Button>
 				<Button colorScheme='teal' onClick={onCancel}>
 					{strings.cancel}
 				</Button>
