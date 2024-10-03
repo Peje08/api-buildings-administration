@@ -1,84 +1,25 @@
-import { useState } from 'react'
-import { VStack, HStack } from '@chakra-ui/react'
+import { VStack, HStack, Button } from '@chakra-ui/react'
 import { colors } from '../../constants/colors'
 import StreetInput from './StreetInput'
 import TowerAccordion from './TowerAccordion'
 import ActionButtons from './ActionButtons'
 import BuildingNumberInput from './NumberInputField'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+	addTower,
+	removeTower,
+	duplicateTower,
+	updatePisos,
+	updateLocalChecked,
+	updatePisosIguales,
+	updateIsLetras
+} from '../../redux/towerSlice'
+import { strings } from 'constants/strings'
+import { RootState } from 'store/store'
 
-interface BuildingConfigurationProps {
-	onCancel: () => void
-}
-
-interface Tower {
-	pisos: number
-	localChecked: boolean
-	pisosIguales: boolean
-	isLetras: boolean
-	pisosValues: string[]
-}
-
-const BuildingConfiguration: React.FC<BuildingConfigurationProps> = ({ onCancel }) => {
-	// Estado inicial con una torre por defecto
-	const [towers, setTowers] = useState<Tower[]>([
-		{
-			pisos: 0, // Valor inicial de los pisos
-			localChecked: false,
-			pisosIguales: false,
-			isLetras: false,
-			pisosValues: [] // Array para almacenar los valores de las unidades funcionales
-		}
-	])
-
-	// Agregar una nueva torre
-	const handleAddTower = () => {
-		setTowers([
-			...towers,
-			{
-				pisos: 0, // Nueva torre comienza con 0 pisos
-				localChecked: false,
-				pisosIguales: false,
-				isLetras: false,
-				pisosValues: []
-			}
-		])
-	}
-
-	// Eliminar una torre
-	const handleRemoveTower = (index: number) => {
-		if (towers.length > 1) {
-			const updatedTowers = towers.filter((_, i) => i !== index)
-			setTowers(updatedTowers)
-		}
-	}
-
-	// Actualizar el número de pisos de una torre específica
-	const handlePisosChange = (value: number, index: number) => {
-		const updatedTowers = [...towers]
-		updatedTowers[index].pisos = value
-		setTowers(updatedTowers)
-	}
-
-	// Actualizar el estado de localChecked de una torre específica
-	const handleLocalCheckedChange = (value: boolean, index: number) => {
-		const updatedTowers = [...towers]
-		updatedTowers[index].localChecked = value
-		setTowers(updatedTowers)
-	}
-
-	// Actualizar el estado de pisosIguales de una torre específica
-	const handlePisosIgualesChange = (value: boolean, index: number) => {
-		const updatedTowers = [...towers]
-		updatedTowers[index].pisosIguales = value
-		setTowers(updatedTowers)
-	}
-
-	// Actualizar el estado de isLetras de una torre específica
-	const handleIsLetrasChange = (value: boolean, index: number) => {
-		const updatedTowers = [...towers]
-		updatedTowers[index].isLetras = value
-		setTowers(updatedTowers)
-	}
+const BuildingConfiguration: React.FC<{ onCancel: () => void }> = ({ onCancel }) => {
+	const towers = useSelector((state: RootState) => state.towers.towers)
+	const dispatch = useDispatch()
 
 	return (
 		<VStack
@@ -91,7 +32,7 @@ const BuildingConfiguration: React.FC<BuildingConfigurationProps> = ({ onCancel 
 			borderColor={colors.verticalDivider}
 			borderRadius='4px'
 			overflowY={'scroll'}
-			maxH={450}
+			maxH={650}
 		>
 			<HStack width='90%' spacing={8}>
 				<StreetInput />
@@ -104,23 +45,51 @@ const BuildingConfiguration: React.FC<BuildingConfigurationProps> = ({ onCancel 
 					<TowerAccordion
 						towerName={`Torre ${index + 1}`}
 						pisos={tower.pisos}
-						handlePisosChange={(value) => handlePisosChange(value, index)}
+						handlePisosChange={(value) =>
+							dispatch(updatePisos({ index, pisos: value }))
+						}
 						localChecked={tower.localChecked}
-						setLocalChecked={(value) => handleLocalCheckedChange(value, index)}
+						setLocalChecked={(value) =>
+							dispatch(updateLocalChecked({ index, localChecked: value }))
+						}
 						pisosIguales={tower.pisosIguales}
-						setPisosIguales={(value) => handlePisosIgualesChange(value, index)}
+						setPisosIguales={(value) =>
+							dispatch(updatePisosIguales({ index, pisosIguales: value }))
+						}
 						isLetras={tower.isLetras}
-						setIsLetras={(value) => handleIsLetrasChange(value, index)}
+						setIsLetras={(value) =>
+							dispatch(updateIsLetras({ index, isLetras: value }))
+						}
 						pisosValues={tower.pisosValues}
 						handlePisoChange={() => {}}
-						showRemoveButton={index > 0}
-						onRemoveTower={() => handleRemoveTower(index)}
+						onRemoveTower={() => dispatch(removeTower(index))} 
+						showRemoveButton={index > 0} 
 					/>
+
+					<HStack>
+						<Button
+							colorScheme='teal'
+							onClick={() => dispatch(duplicateTower(index))}
+							size={'sm'}
+						>
+							{strings.duplicateTower} {index + 1}
+						</Button>
+
+						{index > 0 && (
+							<Button
+								colorScheme='red'
+								onClick={() => dispatch(removeTower(index))}
+								size={'sm'}
+							>
+								{strings.removeTower}
+							</Button>
+						)}
+					</HStack>
 				</VStack>
 			))}
 
 			{/* Botones para duplicar/agregar torres */}
-			<ActionButtons onCancel={onCancel} onAddTower={handleAddTower} />
+			<ActionButtons onCancel={onCancel} onAddTower={() => dispatch(addTower())} />
 		</VStack>
 	)
 }
