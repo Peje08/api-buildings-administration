@@ -10,6 +10,8 @@ export interface Tower {
 
 interface TowerState {
   towers: Tower[]
+  street: string
+  number: string
 }
 
 const initialState: TowerState = {
@@ -21,7 +23,9 @@ const initialState: TowerState = {
       isLetras: false,
       pisosValues: []
     }
-  ]
+  ],
+  street: '',
+  number: ''
 }
 
 export const towerSlice = createSlice({
@@ -64,6 +68,31 @@ export const towerSlice = createSlice({
     },
     updateIsLetras(state, action: PayloadAction<{ index: number; isLetras: boolean }>) {
       state.towers[action.payload.index].isLetras = action.payload.isLetras
+    },
+    handleAccept(state) {
+      const buildingData = {
+        street: state.street,
+        number: state.number,
+        towers: state.towers.map((tower, index) => ({
+          towerName: `Torre ${index + 1}`,
+          pisos: tower.pisos,
+          localChecked: tower.localChecked,
+          isLetras: tower.isLetras,
+          pisosValues: tower.pisosValues,
+        }))
+      }
+      console.log(buildingData)
+    },
+     // Agregamos las acciones para actualizar los valores de calle y número
+     updateStreet(state, action: PayloadAction<string>) {
+      state.street = action.payload
+    },
+    updateNumber(state, action: PayloadAction<string>) {
+      state.number = action.payload
+    },
+    resetForm() {
+      // Reiniciamos el estado a sus valores iniciales
+      return initialState
     }
   }
 })
@@ -75,7 +104,11 @@ export const {
   updatePisos,
   updateLocalChecked,
   updatePisosIguales,
-  updateIsLetras
+  updateIsLetras,
+  handleAccept,
+  updateStreet,
+  updateNumber,
+  resetForm
 } = towerSlice.actions
 
 export default towerSlice.reducer

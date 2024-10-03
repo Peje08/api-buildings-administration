@@ -12,14 +12,29 @@ import {
 	updatePisos,
 	updateLocalChecked,
 	updatePisosIguales,
-	updateIsLetras
+	updateIsLetras,
+	handleAccept,
+	updateStreet,
+	updateNumber,
+	resetForm 
 } from '../../redux/towerSlice'
 import { strings } from 'constants/strings'
 import { RootState } from 'store/store'
 
 const BuildingConfiguration: React.FC<{ onCancel: () => void }> = ({ onCancel }) => {
-	const towers = useSelector((state: RootState) => state.towers.towers)
 	const dispatch = useDispatch()
+	const towers = useSelector((state: RootState) => state.towers.towers)
+	const street = useSelector((state: RootState) => state.towers.street)
+	const number = useSelector((state: RootState) => state.towers.number)
+
+	const handleSubmit = () => {
+		dispatch(handleAccept())
+	}
+
+	const handleCancel = () => {
+		dispatch(resetForm()) 
+		onCancel()
+	  }
 
 	return (
 		<VStack
@@ -35,8 +50,15 @@ const BuildingConfiguration: React.FC<{ onCancel: () => void }> = ({ onCancel })
 			maxH={650}
 		>
 			<HStack width='90%' spacing={8}>
-				<StreetInput />
-				<BuildingNumberInput />
+				<StreetInput
+					value={street} // El valor de la calle desde el store
+					onChange={(e) => dispatch(updateStreet(e.target.value))} // Actualizamos la calle
+				/>
+
+				<BuildingNumberInput
+					value={number} // El valor del número desde el store
+					onChange={(e) => dispatch(updateNumber(e.target.value))} // Actualizamos el número
+				/>
 			</HStack>
 
 			{/* Renderizamos los acordeones de las torres */}
@@ -62,8 +84,8 @@ const BuildingConfiguration: React.FC<{ onCancel: () => void }> = ({ onCancel })
 						}
 						pisosValues={tower.pisosValues}
 						handlePisoChange={() => {}}
-						onRemoveTower={() => dispatch(removeTower(index))} 
-						showRemoveButton={index > 0} 
+						onRemoveTower={() => dispatch(removeTower(index))}
+						showRemoveButton={index > 0}
 					/>
 
 					<HStack>
@@ -89,7 +111,11 @@ const BuildingConfiguration: React.FC<{ onCancel: () => void }> = ({ onCancel })
 			))}
 
 			{/* Botones para duplicar/agregar torres */}
-			<ActionButtons onCancel={onCancel} onAddTower={() => dispatch(addTower())} />
+			<ActionButtons
+				onCancel={handleCancel}
+				onAccept={handleSubmit}
+				onAddTower={() => dispatch(addTower())}
+			/>
 		</VStack>
 	)
 }
