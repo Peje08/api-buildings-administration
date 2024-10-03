@@ -28,12 +28,12 @@ const BuildingConfiguration: React.FC<{ onCancel: () => void }> = ({ onCancel })
 	const number = useSelector((state: RootState) => state.towers.number)
 
 	const handleSubmit = () => {
-		dispatch(handleAccept()) // Despacha la acción que imprime en consola
+		dispatch(handleAccept())
 	}
 
 	const handleCancel = () => {
-		dispatch(resetForm()) // Reiniciamos el formulario a sus valores iniciales
-		onCancel() // También llamamos la función onCancel pasada como prop (si existe)
+		dispatch(resetForm()) 
+		onCancel()
 	  }
 
 	return (
