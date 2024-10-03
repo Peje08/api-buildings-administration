@@ -39,5 +39,6 @@ export const strings = {
   planDetails: 'El plan se completará automáticamente luego de seleccionar las UF',
   sameFloors: 'Pisos Iguales',
   floor: 'Piso',
-  removeTower: 'Eliminar Torre'
+  removeTower: 'Eliminar Torre',
+  functionalUnitsNumber: 'Ingrese número de unidades funcionales'
 }

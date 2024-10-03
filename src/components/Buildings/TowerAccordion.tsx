@@ -11,12 +11,10 @@ import {
 	NumberInputField,
 	Checkbox,
 	Switch,
-	VStack,
-	Button
+	VStack
 } from '@chakra-ui/react'
 import { colors } from '../../constants/colors'
 import { strings } from '../../constants/strings'
-import { FaTrash } from 'react-icons/fa'
 
 interface TowerAccordionProps {
 	towerName: string
@@ -46,8 +44,6 @@ const TowerAccordion: React.FC<TowerAccordionProps> = ({
 	setIsLetras,
 	pisosValues,
 	handlePisoChange,
-	onRemoveTower,
-	showRemoveButton
 }) => {
 	return (
 		<Accordion allowToggle width='95%'>
@@ -68,7 +64,7 @@ const TowerAccordion: React.FC<TowerAccordionProps> = ({
 							<NumberInput
 								min={0}
 								max={100}
-								value={pisos}
+								value={Math.min(pisos, 100) || 0}
 								onChange={(_, valueAsNumber) => handlePisosChange(valueAsNumber)}
 								width='50%'
 								isRequired
@@ -107,8 +103,8 @@ const TowerAccordion: React.FC<TowerAccordionProps> = ({
 					{localChecked && (
 						<HStack width='100%' alignItems='center' mb={4}>
 							<Text width='10%'>{strings.premise}</Text>
-							<NumberInput width='20%' isRequired aria-required='true'>
-								<NumberInputField />
+							<NumberInput width='35%' isRequired aria-required='true'>
+								<NumberInputField placeholder={strings.functionalUnitsNumber} />
 							</NumberInput>
 						</HStack>
 					)}
@@ -116,8 +112,8 @@ const TowerAccordion: React.FC<TowerAccordionProps> = ({
 					{/* Planta Baja */}
 					<HStack width='100%' alignItems='center' mb={4}>
 						<Text width='10%'>{strings.groundFloor}</Text>
-						<NumberInput width='20%' isRequired aria-required='true'>
-							<NumberInputField />
+						<NumberInput width='35%' isRequired aria-required='true'>
+							<NumberInputField placeholder={strings.functionalUnitsNumber} />
 						</NumberInput>
 					</HStack>
 
@@ -136,28 +132,17 @@ const TowerAccordion: React.FC<TowerAccordionProps> = ({
 											handlePisoChange(valueString, index)
 										}
 										isDisabled={pisosIguales && index >= 1}
-										width='20%'
+										width='35%'
 										isRequired
 										aria-required='true'
 									>
-										<NumberInputField />
+										<NumberInputField
+											placeholder={strings.functionalUnitsNumber}
+										/>
 									</NumberInput>
 								</HStack>
 							))}
 					</VStack>
-
-					{/* Mostrar botón de eliminar solo si es Torre 2 en adelante */}
-					{showRemoveButton && (
-						<Button
-							mt={4}
-							colorScheme='red'
-							leftIcon={<FaTrash />}
-							onClick={onRemoveTower}
-							alignSelf='flex-end'
-						>
-							{strings.removeTower}
-						</Button>
-					)}
 				</AccordionPanel>
 			</AccordionItem>
 		</Accordion>
