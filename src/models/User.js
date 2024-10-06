@@ -26,7 +26,9 @@ const UserSchema = new mongoose.Schema(
 		type: {
 			type: String,
 			enum: ['SUPERUSER', 'TENANT', 'OWNER', 'ADMINISTRATION']
-		}
+		},
+		resetPasswordToken: String,
+		resetPasswordExpires: Date
 	},
 	{ timestamps: true }
 )
