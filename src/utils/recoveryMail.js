@@ -14,15 +14,15 @@ exports.recoveryMail = (resetUrl, userName) => `
 
         <!-- BUTTON -->
         <div style="text-align: center; margin: 20px 0;">
-            <a href="${resetUrl}" style="background-color: #007BFF; color: white; padding: 15px 30px; font-size: 16px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            <a href="${resetUrl}" style="background-color: #319795; color: white; padding: 15px 30px; font-size: 16px; text-decoration: none; border-radius: 5px; display: inline-block;">
             Restablecer contraseña
             </a>
         </div>
 
         <!-- ALTERNATIVE URL -->
         <p style="font-size: 14px; color: #999;">O copia y pega este enlace en tu navegador:</p>
-        <p style="font-size: 14px; color: #007BFF; word-break: break-all;">
-            <a href="${resetUrl}" style="color: #007BFF; text-decoration: none;">${resetUrl}</a>
+        <p style="font-size: 14px; color: #319795; word-break: break-all;">
+            <a href="${resetUrl}" style="color: #319795; text-decoration: none;">${resetUrl}</a>
         </p>
 
         <!-- FOOTER -->
