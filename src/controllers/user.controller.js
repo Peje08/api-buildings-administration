@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const crypto = require('crypto')
 const nodemailer = require('nodemailer')
+const { recoveryMail } = require('../utils/recoveryMail')
 
 // Helper function to generate access and refresh tokens
 const generateTokens = (userId, type) => {
@@ -153,23 +154,8 @@ exports.forgotPassword = async (req, res) => {
 		const mailOptions = {
 			to: user.email,
 			from: process.env.EMAIL_USER,
-			subject: 'Password Reset Request',
-			html: `
-				<div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
-					<h2>Password Reset Request</h2>
-					<p>Hello ${user.name},</p>
-					<p>You requested a password reset. Please click the button below to reset your password:</p>
-					<div style="text-align: center;">
-						<a href="${resetUrl}" style="background-color: #007BFF; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-							Reset Password
-						</a>
-					</div>
-					<p style="margin-top: 20px;">Or copy and paste this link into your browser:</p>
-					<p><a href="${resetUrl}" style="color: #007BFF;">${resetUrl}</a></p>
-					<p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
-					<p>Best regards,<br/>The Team</p>
-				</div>
-			`
+			subject: 'Solicitud de restablecimiento de contraseña',
+			html: recoveryMail(resetUrl, user.name)
 		}
 
 		// Send the email
