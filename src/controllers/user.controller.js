@@ -139,7 +139,7 @@ exports.forgotPassword = async (req, res) => {
 		await user.save()
 
 		// Create a reset URL
-		const resetUrl = `${req.protocol}://${req.get('host')}/api/user/reset-password/${resetToken}`
+		const resetUrl = `https://cabildo-fe.vercel.app/reset-password/${resetToken}`
 
 		// Configure nodemailer
 		const transporter = nodemailer.createTransport({
