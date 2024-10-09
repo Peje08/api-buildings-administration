@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
+const Administration = require('../models/Administration')
 const crypto = require('crypto')
 const nodemailer = require('nodemailer')
 
@@ -33,11 +34,12 @@ exports.getUserById = async (req, res) => {
 
 // User register
 exports.register = async (req, res) => {
-	const { name, lastname, email, password, cellularNumer, type } = req.body
+	const { username, email, password, cellularNumer, type } = req.body
 
 	try {
 		// Verify if the user already exists
 		let user = await User.findOne({ email })
+		let newAdministration = {}
 		if (user) {
 			return res.status(400).json({ message: 'Email is already registered.' })
 		}
@@ -48,8 +50,7 @@ exports.register = async (req, res) => {
 
 		// Create a new user
 		user = new User({
-			name,
-			lastname,
+			username,
 			email,
 			password: hashedPassword,
 			cellularNumer,
@@ -58,12 +59,32 @@ exports.register = async (req, res) => {
 
 		await user.save()
 
+		// Check if the user type is 'ADMINISTRATION' to create a corresponding administration
+		if (type === 'ADMINISTRATION') {
+			const friendlyId = `${user._id.toString().slice(-4)}`
+
+			// Create the administration
+			newAdministration = new Administration({
+				name: username,
+				ownerId: user._id,
+				friendlyId,
+				buildings: []
+			})
+
+			await newAdministration.save()
+		}
+
 		// Generate tokens
 		const { accessToken, refreshToken } = generateTokens(user._id, user.type)
 
-		res.status(201).json({ accessToken, refreshToken, userId: user._id })
+		const response = { accessToken, refreshToken, userId: user._id }
+
+		if (type === 'ADMINISTRATION') response.administrationId = newAdministration._id
+
+		res.status(201).json(response)
 	} catch (error) {
-		res.status(500).json({ message: 'Error registering user.', error })
+		console.log({ error })
+		res.status(500).json({ message: 'Error registering user. ' + error.message })
 	}
 }
 
