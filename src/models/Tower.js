@@ -6,6 +6,9 @@ const TowerSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+	name: {
+		type: String
+	},
 	floorsNumber: {
 		type: Number,
 		required: true,
