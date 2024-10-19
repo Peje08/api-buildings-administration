@@ -109,7 +109,20 @@ exports.login = async (req, res) => {
 		// Generate tokens
 		const { accessToken, refreshToken } = generateTokens(user._id, user.type)
 
-		res.status(200).json({ accessToken, refreshToken, userId: user._id })
+		// Prepare the response object
+		const response = { accessToken, refreshToken, userId: user._id }
+
+		// If the user type is 'ADMINISTRATION', retrieve the corresponding administration
+		if (user.type === 'ADMINISTRATION') {
+			const administration = await Administration.findOne({ ownerId: user._id })
+
+			if (administration) {
+				response.administrationId = administration._id
+			}
+		}
+
+		// Send the response
+		res.status(200).json(response)
 	} catch (error) {
 		res.status(500).json({ message: 'Error logging in.', error })
 	}

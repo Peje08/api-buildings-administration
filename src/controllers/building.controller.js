@@ -11,7 +11,7 @@ const User = require('../models/User')
 // Create a new Building with towers and functional units
 exports.createFullBuilding = async (req, res) => {
 	try {
-		const { administrationId, ownerUserId, buildings } = req.body
+		const { administrationId, ownerUserId, street, number, towers, plan, ufLength } = req.body
 
 		// Verify if the administration exists
 		const administration = await Administration.findById(administrationId)
@@ -29,68 +29,66 @@ exports.createFullBuilding = async (req, res) => {
 			})
 		}
 
-		// Object to store the results of created entities
-		const result = {
-			administration: {
-				id: administration._id,
-				name: administration.name,
-				buildings: []
-			}
+		// Create a plan based on the information provided
+		const newPlan = new Plan({
+			friendlyId: `plan-${uuidv4().slice(-4)}`,
+			description: plan.planDescription,
+			price: plan.price,
+			functionUnitsAmount: ufLength
+		})
+		await newPlan.save()
+
+		// Generate a friendlyId for the building
+		const friendlyId = `${administration.friendlyId}-${uuidv4().slice(-4)}`
+
+		// Create the new building
+		const newBuilding = new Building({
+			administrationId: administration._id,
+			planId: newPlan._id,
+			friendlyId,
+			streetName: street,
+			streetNumber: number,
+			towersData: []
+		})
+		await newBuilding.save()
+
+		// Object to store the result details
+		const buildingDetails = {
+			id: newBuilding._id,
+			friendlyId: newBuilding.friendlyId,
+			streetName: newBuilding.streetName,
+			streetNumber: newBuilding.streetNumber,
+			towers: []
 		}
 
-		// Iterate through each building in the buildings object
-		for (const [_, buildingData] of Object.entries(buildings)) {
-			const { street, number, towers } = buildingData
+		// Iterate through the towers
+		for (const towerData of towers) {
+			const { towerName, floors, hasPremise, premise, groundFloor } = towerData
 
-			// Generate a friendlyId for the building
-			const friendlyId = `${administration.friendlyId}-${uuidv4().slice(-4)}`
-
-			// Create the new building
-			const newBuilding = new Building({
-				administrationId: administration._id,
-				friendlyId,
-				streetName: street,
-				streetNumber: number,
-				towersData: []
+			// Create the tower
+			const newTower = new Tower({
+				name: towerName,
+				buildingId: newBuilding._id,
+				friendlyId: `${newBuilding.friendlyId}-${uuidv4().slice(-4)}`,
+				floorsNumber: floors,
+				premisesAmount: hasPremise && premise ? Object.keys(premise).length : 0,
+				functionalUnitsData: []
 			})
-			await newBuilding.save()
+			await newTower.save()
 
-			// Object to store the building's details and towers
-			const buildingDetails = {
-				id: newBuilding._id,
-				friendlyId: newBuilding.friendlyId,
-				streetName: newBuilding.streetName,
-				streetNumber: newBuilding.streetNumber,
-				towers: []
+			const towerDetails = {
+				id: newTower._id,
+				friendlyId: newTower.friendlyId,
+				name: newTower.name,
+				floorsNumber: newTower.floorsNumber,
+				functionalUnits: []
 			}
 
-			// Iterate through the towers
-			for (const [_, towerData] of Object.entries(towers)) {
-				const { towerName, floors, hasPremise, premise, groundFloor } = towerData
-
-				// Create the tower
-				const newTower = new Tower({
-					name: towerName,
-					buildingId: newBuilding._id,
-					friendlyId: `${newBuilding.friendlyId}-${uuidv4().slice(-4)}`, // FriendlyId based on the building
-					floorsNumber: floors,
-					premisesAmount: hasPremise && premise ? Object.keys(premise).length : 0,
-					functionalUnitsData: []
-				})
-				await newTower.save()
-
-				// Object to store tower details and functional units
-				const towerDetails = {
-					id: newTower._id,
-					friendlyId: newTower.friendlyId,
-					name: newTower.name,
-					floorsNumber: newTower.floorsNumber,
-					functionalUnits: []
-				}
-
-				// Create functional units for the premises (if any)
-				if (hasPremise && premise) {
-					for (const [_, ufData] of Object.entries(premise)) {
+			// Create functional units for premises (if any)
+			if (hasPremise && premise) {
+				for (const ufData of Object.values(premise)) {
+					// Only create a user if an email is provided
+					if (ufData.mail) {
 						const newUser = await createUserForFunctionalUnit(ufData)
 						const newFunctionalUnit = await createFunctionalUnit(
 							newTower,
@@ -99,22 +97,21 @@ exports.createFullBuilding = async (req, res) => {
 							'PREMISE'
 						)
 						newTower.functionalUnitsData.push(newFunctionalUnit._id)
-
-						// Store details of the functional unit and user
 						towerDetails.functionalUnits.push({
 							id: newFunctionalUnit._id,
 							name: newFunctionalUnit.name,
-							type: newFunctionalUnit.type,
-							occupied: newFunctionalUnit.occupied,
 							ownerUser: newUser._id,
 							userEmail: newUser.email
 						})
 					}
 				}
+			}
 
-				// Create functional units for the ground floor
-				if (groundFloor) {
-					for (const [_, ufData] of Object.entries(groundFloor)) {
+			// Create functional units for the ground floor
+			if (groundFloor) {
+				for (const ufData of Object.values(groundFloor)) {
+					// Only create a user if an email is provided
+					if (ufData.mail) {
 						const newUser = await createUserForFunctionalUnit(ufData)
 						const newFunctionalUnit = await createFunctionalUnit(
 							newTower,
@@ -123,25 +120,24 @@ exports.createFullBuilding = async (req, res) => {
 							'APARTMENT'
 						)
 						newTower.functionalUnitsData.push(newFunctionalUnit._id)
-
-						// Store details of the functional unit and user
 						towerDetails.functionalUnits.push({
 							id: newFunctionalUnit._id,
 							name: newFunctionalUnit.name,
-							type: newFunctionalUnit.type,
-							occupied: newFunctionalUnit.occupied,
 							ownerUser: newUser._id,
 							userEmail: newUser.email
 						})
 					}
 				}
+			}
 
-				// Create functional units for each floor
-				for (let i = 1; i <= floors; i++) {
-					const floorKey = `Floor-${i}`
-					const floorData = towerData[floorKey]
-					if (floorData) {
-						for (const [_, ufData] of Object.entries(floorData)) {
+			// Create functional units for each floor
+			for (let i = 1; i <= floors; i++) {
+				const floorKey = `Floor-${i}`
+				const floorData = towerData[floorKey]
+				if (floorData) {
+					for (const ufData of Object.values(floorData)) {
+						// Only create a user if an email is provided
+						if (ufData.mail) {
 							const newUser = await createUserForFunctionalUnit(ufData)
 							const newFunctionalUnit = await createFunctionalUnit(
 								newTower,
@@ -150,43 +146,36 @@ exports.createFullBuilding = async (req, res) => {
 								'APARTMENT'
 							)
 							newTower.functionalUnitsData.push(newFunctionalUnit._id)
-
-							// Store details of the functional unit and user
 							towerDetails.functionalUnits.push({
 								id: newFunctionalUnit._id,
 								name: newFunctionalUnit.name,
-								type: newFunctionalUnit.type,
-								occupied: newFunctionalUnit.occupied,
 								ownerUser: newUser._id,
 								userEmail: newUser.email
 							})
 						}
 					}
 				}
-
-				// Save the tower with its functional units
-				await newTower.save()
-				newBuilding.towersData.push(newTower._id)
-
-				// Add tower details to the building
-				buildingDetails.towers.push(towerDetails)
 			}
 
-			// Save the building with all towers
-			await newBuilding.save()
+			// Save the tower with its functional units
+			await newTower.save()
+			newBuilding.towersData.push(newTower._id)
 
-			// Add the building to the administration's buildings array
-			administration.buildings.push(newBuilding._id)
-			await administration.save()
-
-			// Add building details to the result
-			result.administration.buildings.push(buildingDetails)
+			// Add tower details to the building
+			buildingDetails.towers.push(towerDetails)
 		}
+
+		// Save the building with all towers
+		await newBuilding.save()
+
+		// Add the building to the administration's buildings array
+		administration.buildings.push(newBuilding._id)
+		await administration.save()
 
 		// Return the result with all created entities
 		res.status(201).json({
 			message: 'Building, towers, and functional units created successfully.',
-			data: result
+			data: buildingDetails
 		})
 	} catch (error) {
 		console.error(error)
@@ -196,7 +185,7 @@ exports.createFullBuilding = async (req, res) => {
 
 // Function to create a user for each functional unit
 const createUserForFunctionalUnit = async (ufData) => {
-	const { userName, mail, cellularNumber } = ufData
+	const { fullName, mail, cellularNumber } = ufData
 
 	// Check if the user already exists
 	let user = await User.findOne({ email: mail })
@@ -207,7 +196,7 @@ const createUserForFunctionalUnit = async (ufData) => {
 		// console.log({ email: mail, password })
 
 		user = new User({
-			name: userName,
+			username: fullName,
 			email: mail,
 			password: hashedPassword,
 			cellularNumer: cellularNumber || '',
@@ -222,10 +211,10 @@ const createUserForFunctionalUnit = async (ufData) => {
 
 // Function to create a functional unit
 const createFunctionalUnit = async (tower, ufData, user, type) => {
-	const { ufName, isRented } = ufData
+	const { name, isRented } = ufData
 	const functionalUnit = new FunctionalUnit({
 		friendlyId: `${tower.friendlyId}-${uuidv4().slice(-4)}`,
-		name: ufName,
+		name,
 		type, // 'PREMISE' or 'APARTMENT'
 		occupied: isRented,
 		ownerUserId: type === 'OWNER' ? user._id : null,

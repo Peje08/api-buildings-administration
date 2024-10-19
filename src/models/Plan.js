@@ -6,18 +6,11 @@ const PlanSchema = new mongoose.Schema({
 		required: true,
 		unique: true
 	},
-	name: {
-		type: String,
-		required: true
-	},
 	description: {
 		type: String
 	},
 	price: {
 		type: Number
-	},
-	featuresFlags: {
-		type: [String]
 	},
 	functionUnitsAmount: {
 		type: Number
