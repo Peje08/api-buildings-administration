@@ -56,7 +56,8 @@ exports.register = async (req, res) => {
 			email,
 			password: hashedPassword,
 			cellularNumer,
-			type
+			type,
+			isActive: false
 		})
 
 		await user.save()
