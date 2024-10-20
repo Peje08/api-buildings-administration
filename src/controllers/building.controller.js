@@ -9,6 +9,9 @@ const User = require('../models/User')
 const { hashPassword } = require('../utils/hashPassword')
 const { welcomeMail } = require('../utils/templates/welcomeMail')
 const sendEmail = require('../utils/sendEmail')
+const {
+	administrationNotificationMail
+} = require('../utils/templates/administrationNotificationMail')
 
 // Create a new Building with towers and functional units
 exports.createFullBuilding = async (req, res) => {
@@ -188,6 +191,11 @@ exports.createFullBuilding = async (req, res) => {
 		// Add the building to the administration's buildings array
 		administration.buildings.push(newBuilding._id)
 		await administration.save()
+
+		// Send an email notification to the administration
+		const subject = 'Edificio creado exitosamente'
+		const htmlContent = administrationNotificationMail(administration.name, street, number)
+		await sendEmail(ownerUser.email, subject, htmlContent)
 
 		// Return the result with all created entities
 		res.status(201).json({

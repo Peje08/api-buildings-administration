@@ -246,7 +246,9 @@ exports.deactivateUser = async (req, res) => {
 
 	try {
 		// Find the user by ID and set isActive to false
-		const user = await User.findByIdAndUpdate(userId, { isActive: false }, { new: true })
+		const user = await User.findByIdAndUpdate(userId, { isActive: false }, { new: true }).select(
+			'-password'
+		)
 
 		if (!user) {
 			return res.status(404).json({ message: 'User not found' })
@@ -264,7 +266,9 @@ exports.reactivateUser = async (req, res) => {
 
 	try {
 		// Find the user by ID and set isActive to true
-		const user = await User.findByIdAndUpdate(userId, { isActive: true }, { new: true })
+		const user = await User.findByIdAndUpdate(userId, { isActive: true }, { new: true }).select(
+			'-password'
+		)
 
 		if (!user) {
 			return res.status(404).json({ message: 'User not found' })
