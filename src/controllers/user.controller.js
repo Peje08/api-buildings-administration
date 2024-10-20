@@ -78,7 +78,7 @@ exports.register = async (req, res) => {
 		}
 
 		// Send activation email with a link to the frontend activation page
-		const activationLink = `https://cabildo-fe.vercel.app/activate-account/${user._id}`
+		const activationLink = `${process.env.CABILDO_FRONT_URL}/activate-account/${user._id}`
 		const emailContent = activationMail(username, activationLink)
 		await sendEmail(user.email, 'Confirma tu cuenta en Cabildo', emailContent)
 
@@ -181,7 +181,7 @@ exports.forgotPassword = async (req, res) => {
 		await user.save()
 
 		// Create a reset URL
-		const resetUrl = `https://cabildo-fe.vercel.app/reset-password/${resetToken}`
+		const resetUrl = `${process.env.CABILDO_FRONT_URL}/reset-password/${resetToken}`
 
 		const subject = 'Solicitud de restablecimiento de contraseña'
 		const htmlContent = recoveryMail(resetUrl, user.username)
