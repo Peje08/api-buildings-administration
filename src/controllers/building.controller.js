@@ -177,7 +177,16 @@ exports.createFullBuilding = async (req, res) => {
 		// Return the result with all created entities
 		res.status(201).json({
 			message: 'Building, towers, and functional units created successfully.',
-			data: buildingDetails
+			data: {
+				...buildingDetails,
+				plan: {
+					id: newPlan._id,
+					friendlyId: newPlan.friendlyId,
+					description: newPlan.description,
+					price: newPlan.price,
+					functionUnitsAmount: newPlan.functionUnitsAmount
+				}
+			}
 		})
 	} catch (error) {
 		console.error(error)

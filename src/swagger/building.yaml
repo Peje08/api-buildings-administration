@@ -209,7 +209,6 @@ paths:
         '500':
           description: Error deleting building
 
-  /buildings/create-full:
     post:
       summary: Create a full building (with towers and functional units)
       description: Creates a new building with the provided details, including towers and functional units.
@@ -224,54 +223,125 @@ paths:
               properties:
                 administrationId:
                   type: string
+                  description: The ID of the administration.
                   example: '64f9a5b7c2e4d3a9b8a0e1f2'
-                planId:
-                  type: string
-                  example: '64f9a5b7c2e4d3a9b8a0e1f3'
-                streetName:
-                  type: string
-                  example: 'Main Street'
-                streetNumber:
-                  type: string
-                  example: '123'
                 ownerUserId:
                   type: string
-                  description: 'The user who owns the building'
+                  description: The user who owns the building.
                   example: '64f9a5b7c2e4d3a9b8a0e1f9'
+                street:
+                  type: string
+                  description: The name of the street where the building is located.
+                  example: 'Main Street'
+                number:
+                  type: string
+                  description: The number of the street where the building is located.
+                  example: '123'
+                ufLength:
+                  type: number
+                  description: The total number of functional units.
+                  example: 14
+                plan:
+                  type: object
+                  description: The plan associated with the building.
+                  properties:
+                    planDescription:
+                      type: string
+                      example: 'Your current plan includes 14 functional units'
+                    price:
+                      type: number
+                      example: 22500
                 towers:
                   type: array
+                  description: The towers to be created in the building.
                   items:
                     type: object
                     properties:
-                      floorsNumber:
+                      towerName:
+                        type: string
+                        description: The name of the tower.
+                        example: 'Tower 1'
+                      floors:
                         type: number
+                        description: The number of floors in the tower.
                         example: 10
-                      premisesAmount:
-                        type: number
-                        example: 5
-                      functionalUnits:
-                        type: array
-                        items:
+                      hasPremise:
+                        type: boolean
+                        description: Whether the tower has premises.
+                        example: true
+                      premise:
+                        type: object
+                        description: The premises (locales) in the tower.
+                        additionalProperties:
                           type: object
                           properties:
                             name:
                               type: string
-                              example: 'Functional Unit 1A'
+                              example: 'Premise 1'
+                            mail:
+                              type: string
+                              example: 'example@mail.com'
+                            cellularNumber:
+                              type: string
+                              example: '123456789'
+                            fullName:
+                              type: string
+                              example: 'John Doe'
+                            isRented:
+                              type: boolean
+                              example: true
+                            type:
+                              type: string
+                              example: 'TENANT'
+                      groundFloor:
+                        type: object
+                        description: The functional units on the ground floor.
+                        additionalProperties:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: 'Ground Floor Unit 1'
+                            mail:
+                              type: string
+                              example: 'example@mail.com'
+                            cellularNumber:
+                              type: string
+                              example: '123456789'
+                            fullName:
+                              type: string
+                              example: 'John Doe'
+                            isRented:
+                              type: boolean
+                              example: true
+                            type:
+                              type: string
+                              example: 'TENANT'
+                      Floor-{n}:
+                        type: object
+                        description: The functional units on each floor of the tower (replace {n} with the floor number).
+                        additionalProperties:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: 'Unit 1A'
+                            mail:
+                              type: string
+                              example: 'example@mail.com'
+                            cellularNumber:
+                              type: string
+                              example: '123456789'
+                            fullName:
+                              type: string
+                              example: 'John Doe'
+                            isRented:
+                              type: boolean
+                              example: false
                             type:
                               type: string
                               enum: ['APARTMENT', 'PREMISE']
                               example: 'APARTMENT'
-                            occupied:
-                              type: boolean
-                              example: false
-                            ownerUserId:
-                              type: string
-                              description: 'User ID of the owner of the functional unit'
-                              example: '64f9a5b7c2e4d3a9b8a0e1f9'
-                            tenantUserId:
-                              type: string
-                              description: 'User ID of the tenant if applicable'
-                              example: '64f9a5b7c2e4d3a9b8a0e1f8'
       responses:
         '201':
           description: Full building created successfully
@@ -336,5 +406,218 @@ paths:
                               tenantUserId:
                                 type: string
                                 example: '64f9a5b7c2e4d3a9b8a0e1f8'
+        '400':
+          description: Invalid administrationId or ownerUserId
         '500':
           description: Error creating full building
+
+  /buildings/create-full:
+    post:
+    summary: Create a full building (with towers and functional units)
+    description: Creates a new building with the provided details, including towers and functional units.
+    tags:
+      - Building
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              administrationId:
+                type: string
+                description: The ID of the administration.
+                example: '64f9a5b7c2e4d3a9b8a0e1f2'
+              ownerUserId:
+                type: string
+                description: The user who owns the building.
+                example: '64f9a5b7c2e4d3a9b8a0e1f9'
+              street:
+                type: string
+                description: The name of the street where the building is located.
+                example: 'Main Street'
+              number:
+                type: string
+                description: The number of the street where the building is located.
+                example: '123'
+              ufLength:
+                type: number
+                description: The total number of functional units.
+                example: 14
+              plan:
+                type: object
+                description: The plan associated with the building.
+                properties:
+                  planDescription:
+                    type: string
+                    example: 'Your current plan includes 14 functional units'
+                  price:
+                    type: number
+                    example: 22500
+              towers:
+                type: array
+                description: The towers to be created in the building.
+                items:
+                  type: object
+                  properties:
+                    towerName:
+                      type: string
+                      description: The name of the tower.
+                      example: 'Tower 1'
+                    floors:
+                      type: number
+                      description: The number of floors in the tower.
+                      example: 10
+                    hasPremise:
+                      type: boolean
+                      description: Whether the tower has premises.
+                      example: true
+                    premise:
+                      type: object
+                      description: The premises (locales) in the tower.
+                      additionalProperties:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: 'Premise 1'
+                          mail:
+                            type: string
+                            example: 'example@mail.com'
+                          cellularNumber:
+                            type: string
+                            example: '123456789'
+                          fullName:
+                            type: string
+                            example: 'John Doe'
+                          isRented:
+                            type: boolean
+                            example: true
+                          type:
+                            type: string
+                            example: 'TENANT'
+                    groundFloor:
+                      type: object
+                      description: The functional units on the ground floor.
+                      additionalProperties:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: 'Ground Floor Unit 1'
+                          mail:
+                            type: string
+                            example: 'example@mail.com'
+                          cellularNumber:
+                            type: string
+                            example: '123456789'
+                          fullName:
+                            type: string
+                            example: 'John Doe'
+                          isRented:
+                            type: boolean
+                            example: true
+                          type:
+                            type: string
+                            example: 'TENANT'
+                    Floor-{n}:
+                      type: object
+                      description: The functional units on each floor of the tower (replace {n} with the floor number).
+                      additionalProperties:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: 'Unit 1A'
+                          mail:
+                            type: string
+                            example: 'example@mail.com'
+                          cellularNumber:
+                            type: string
+                            example: '123456789'
+                          fullName:
+                            type: string
+                            example: 'John Doe'
+                          isRented:
+                            type: boolean
+                            example: false
+                          type:
+                            type: string
+                            enum: ['APARTMENT', 'PREMISE']
+                            example: 'APARTMENT'
+    responses:
+      '201':
+        description: Full building created successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  example: '64f9a5b7c2e4d3a9b8a0e1f4'
+                friendlyId:
+                  type: string
+                  example: 'main-street-123-a1b2'
+                streetName:
+                  type: string
+                  example: 'Main Street'
+                streetNumber:
+                  type: string
+                  example: '123'
+                towers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: '64f9a5b7c2e4d3a9b8a0e1f5'
+                      friendlyId:
+                        type: string
+                        example: 'main-street-123-a1b2-abc1'
+                      name:
+                        type: string
+                        example: 'Torre 1'
+                      floorsNumber:
+                        type: number
+                        example: 10
+                      functionalUnits:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: '64f9a5b7c2e4d3a9b8a0e1f6'
+                            name:
+                              type: string
+                              example: 'Functional Unit 1A'
+                            ownerUser:
+                              type: string
+                              example: '64f9a5b7c2e4d3a9b8a0e1f9'
+                            userEmail:
+                              type: string
+                              example: 'example@mail.com'
+                plan:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: '64f9a5b7c2e4d3a9b8a0e1f3'
+                    friendlyId:
+                      type: string
+                      example: 'plan-e64c'
+                    description:
+                      type: string
+                      example: 'Your current plan includes 14 functional units'
+                    price:
+                      type: number
+                      example: 22500
+                    functionUnitsAmount:
+                      type: number
+                      example: 14
+      '400':
+        description: Invalid administrationId or ownerUserId
+      '500':
+        description: Error creating full building

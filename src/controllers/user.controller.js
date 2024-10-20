@@ -96,8 +96,8 @@ exports.login = async (req, res) => {
 	try {
 		// Verify if the user exists
 		const user = await User.findOne({ email })
-		if (!user) {
-			return res.status(400).json({ message: 'Invalid credentials.' })
+		if (!user || !user.isActive) {
+			return res.status(400).json({ message: 'Invalid credentials or inactive user.' })
 		}
 
 		// Compare the password
@@ -237,5 +237,41 @@ exports.resetPassword = async (req, res) => {
 		res.status(200).json({ message: 'Password reset successfully.' })
 	} catch (error) {
 		res.status(500).json({ message: 'Error resetting password.', error })
+	}
+}
+
+// Deactivate user (soft delete)
+exports.deactivateUser = async (req, res) => {
+	const { userId } = req.params
+
+	try {
+		// Find the user by ID and set isActive to false
+		const user = await User.findByIdAndUpdate(userId, { isActive: false }, { new: true })
+
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' })
+		}
+
+		res.status(200).json({ message: 'User deactivated successfully', user })
+	} catch (error) {
+		res.status(500).json({ message: 'Error deactivating user', error })
+	}
+}
+
+// Reactivate user
+exports.reactivateUser = async (req, res) => {
+	const { userId } = req.params
+
+	try {
+		// Find the user by ID and set isActive to true
+		const user = await User.findByIdAndUpdate(userId, { isActive: true }, { new: true })
+
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' })
+		}
+
+		res.status(200).json({ message: 'User reactivated successfully', user })
+	} catch (error) {
+		res.status(500).json({ message: 'Error reactivating user', error })
 	}
 }

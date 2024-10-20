@@ -24,4 +24,10 @@ router.get('/reset-password/:token', userController.verifyResetToken)
 // Reset password
 router.post('/reset-password/:token', userController.resetPassword)
 
+// Deactivate user
+router.put('/deactivate/:userId', authMiddleware, userController.deactivateUser)
+
+// Reactivate user (optional)
+router.put('/reactivate/:userId', authMiddleware, userController.reactivateUser)
+
 module.exports = router
