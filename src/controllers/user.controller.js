@@ -3,9 +3,9 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const Administration = require('../models/Administration')
 const crypto = require('crypto')
-const nodemailer = require('nodemailer')
-const { recoveryMail } = require('../utils/recoveryMail')
+const { recoveryMail } = require('../utils/templates/recoveryMail')
 const { hashPassword } = require('../utils/hashPassword')
+const sendEmail = require('../utils/sendEmail')
 
 // Helper function to generate access and refresh tokens
 const generateTokens = (userId, type) => {
@@ -176,24 +176,10 @@ exports.forgotPassword = async (req, res) => {
 		// Create a reset URL
 		const resetUrl = `https://cabildo-fe.vercel.app/reset-password/${resetToken}`
 
-		// Configure nodemailer
-		const transporter = nodemailer.createTransport({
-			service: 'gmail',
-			auth: {
-				user: process.env.EMAIL_USER,
-				pass: process.env.EMAIL_PASSWORD
-			}
-		})
+		const subject = 'Solicitud de restablecimiento de contraseña'
+		const htmlContent = recoveryMail(resetUrl, user.username)
 
-		const mailOptions = {
-			to: user.email,
-			from: process.env.EMAIL_USER,
-			subject: 'Solicitud de restablecimiento de contraseña',
-			html: recoveryMail(resetUrl, user.name)
-		}
-
-		// Send the email
-		await transporter.sendMail(mailOptions)
+		await sendEmail(user.email, subject, htmlContent)
 
 		res.status(200).json({ message: 'Password reset email sent.' })
 	} catch (error) {

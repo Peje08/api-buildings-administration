@@ -7,6 +7,8 @@ const Plan = require('../models/Plan')
 const Tower = require('../models/Tower')
 const User = require('../models/User')
 const { hashPassword } = require('../utils/hashPassword')
+const { welcomeMail } = require('../utils/templates/welcomeMail')
+const sendEmail = require('../utils/sendEmail')
 
 // Create a new Building with towers and functional units
 exports.createFullBuilding = async (req, res) => {
@@ -204,7 +206,11 @@ const createUserForFunctionalUnit = async (ufData) => {
 		})
 
 		await user.save()
-		// ! You can send the email with the password here (pending)
+
+		// Send an email with the user's credentials
+		const subject = 'Bienvenido a la plataforma - Tus credenciales'
+		const htmlContent = welcomeMail(fullName, mail, password)
+		await sendEmail(mail, subject, htmlContent)
 	}
 	return user
 }
