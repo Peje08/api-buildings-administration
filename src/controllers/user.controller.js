@@ -6,6 +6,7 @@ const crypto = require('crypto')
 const { recoveryMail } = require('../utils/templates/recoveryMail')
 const { hashPassword } = require('../utils/hashPassword')
 const sendEmail = require('../utils/sendEmail')
+const { activationMail } = require('../utils/templates/activationMail')
 
 // Helper function to generate access and refresh tokens
 const generateTokens = (userId, type) => {
@@ -74,6 +75,11 @@ exports.register = async (req, res) => {
 
 			await newAdministration.save()
 		}
+
+		// Send activation email with a link to the frontend activation page
+		const activationLink = `https://cabildo-fe.vercel.app/activate-account/${user._id}`
+		const emailContent = activationMail(username, activationLink)
+		await sendEmail(user.email, 'Confirma tu cuenta en Cabildo', emailContent)
 
 		// Generate tokens
 		const { accessToken, refreshToken } = generateTokens(user._id, user.type)
