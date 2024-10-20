@@ -91,7 +91,12 @@ exports.createFullBuilding = async (req, res) => {
 				for (const ufData of Object.values(premise)) {
 					// Only create a user if an email is provided
 					if (ufData.mail) {
-						const newUser = await createUserForFunctionalUnit(ufData)
+						const newUser = await createUserForFunctionalUnit(
+							ufData,
+							administration.name,
+							street,
+							number
+						)
 						const newFunctionalUnit = await createFunctionalUnit(
 							newTower,
 							ufData,
@@ -114,7 +119,12 @@ exports.createFullBuilding = async (req, res) => {
 				for (const ufData of Object.values(groundFloor)) {
 					// Only create a user if an email is provided
 					if (ufData.mail) {
-						const newUser = await createUserForFunctionalUnit(ufData)
+						const newUser = await createUserForFunctionalUnit(
+							ufData,
+							administration.name,
+							street,
+							number
+						)
 						const newFunctionalUnit = await createFunctionalUnit(
 							newTower,
 							ufData,
@@ -140,7 +150,12 @@ exports.createFullBuilding = async (req, res) => {
 					for (const ufData of Object.values(floorData)) {
 						// Only create a user if an email is provided
 						if (ufData.mail) {
-							const newUser = await createUserForFunctionalUnit(ufData)
+							const newUser = await createUserForFunctionalUnit(
+								ufData,
+								administration.name,
+								street,
+								number
+							)
 							const newFunctionalUnit = await createFunctionalUnit(
 								newTower,
 								ufData,
@@ -195,7 +210,7 @@ exports.createFullBuilding = async (req, res) => {
 }
 
 // Function to create a user for each functional unit
-const createUserForFunctionalUnit = async (ufData) => {
+const createUserForFunctionalUnit = async (ufData, adminName, streetAddress, numberAddress) => {
 	const { fullName, mail, cellularNumber } = ufData
 
 	// Check if the user already exists
@@ -218,7 +233,14 @@ const createUserForFunctionalUnit = async (ufData) => {
 
 		// Send an email with the user's credentials
 		const subject = 'Bienvenido a la plataforma - Tus credenciales'
-		const htmlContent = welcomeMail(fullName, mail, password)
+		const htmlContent = welcomeMail(
+			adminName,
+			fullName,
+			mail,
+			password,
+			streetAddress,
+			numberAddress
+		)
 		await sendEmail(mail, subject, htmlContent)
 	}
 	return user
