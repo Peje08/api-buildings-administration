@@ -5,6 +5,7 @@ const Administration = require('../models/Administration')
 const crypto = require('crypto')
 const nodemailer = require('nodemailer')
 const { recoveryMail } = require('../utils/recoveryMail')
+const { hashPassword } = require('../utils/hashPassword')
 
 // Helper function to generate access and refresh tokens
 const generateTokens = (userId, type) => {
@@ -46,8 +47,7 @@ exports.register = async (req, res) => {
 		}
 
 		// Hash the password
-		const salt = await bcrypt.genSalt(10)
-		const hashedPassword = await bcrypt.hash(password, salt)
+		const hashedPassword = await hashPassword(password)
 
 		// Create a new user
 		user = new User({

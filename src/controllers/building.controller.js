@@ -1,5 +1,4 @@
 const { v4: uuidv4 } = require('uuid')
-const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
 const Building = require('../models/Building')
 const Administration = require('../models/Administration')
@@ -7,6 +6,7 @@ const FunctionalUnit = require('../models/FunctionalUnit')
 const Plan = require('../models/Plan')
 const Tower = require('../models/Tower')
 const User = require('../models/User')
+const { hashPassword } = require('../utils/hashPassword')
 
 // Create a new Building with towers and functional units
 exports.createFullBuilding = async (req, res) => {
@@ -191,9 +191,9 @@ const createUserForFunctionalUnit = async (ufData) => {
 	let user = await User.findOne({ email: mail })
 	if (!user) {
 		const password = crypto.randomBytes(8).toString('hex')
-		const hashedPassword = await bcrypt.hash(password, 10)
+		const hashedPassword = await hashPassword(password)
 
-		// console.log({ email: mail, password })
+		// console.log({ email: mail, password, hashedPassword })
 
 		user = new User({
 			username: fullName,
