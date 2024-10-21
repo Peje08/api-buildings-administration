@@ -63,7 +63,7 @@ exports.register = async (req, res) => {
 		await user.save()
 
 		// Check if the user type is 'ADMINISTRATION' to create a corresponding administration
-		if (type === 'ADMINISTRATION') {
+		if (type === 'ADMINISTRATION' || type === 'SUPERUSER') {
 			const friendlyId = `${user._id.toString().slice(-4)}`
 
 			// Create the administration
@@ -87,7 +87,8 @@ exports.register = async (req, res) => {
 
 		const response = { accessToken, refreshToken, userId: user._id }
 
-		if (type === 'ADMINISTRATION') response.administrationId = newAdministration._id
+		if (type === 'ADMINISTRATION' || type === 'SUPERUSER')
+			response.administrationId = newAdministration._id
 
 		res.status(201).json(response)
 	} catch (error) {
@@ -120,7 +121,7 @@ exports.login = async (req, res) => {
 		const response = { accessToken, refreshToken, userId: user._id }
 
 		// If the user type is 'ADMINISTRATION', retrieve the corresponding administration
-		if (user.type === 'ADMINISTRATION') {
+		if (user.type === 'ADMINISTRATION' || user.type === 'SUPERUSER') {
 			const administration = await Administration.findOne({ ownerId: user._id })
 
 			if (administration) {
