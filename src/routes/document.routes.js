@@ -2,11 +2,11 @@ const express = require('express')
 const router = express.Router()
 const documentController = require('../controllers/document.controller')
 
-// Create a new document and upload the file to the hosting
-router.post('/create-document', documentController.createDocument)
-
 // Get allDocuments
-router.post('/', documentController.getAllDocuments)
+router.get('/', documentController.getAllDocuments)
+
+// Create a new document and upload the file to the hosting
+router.post('/createDocument', documentController.createDocument)
 
 // Get a document by ID
 router.get('/:id', documentController.getDocumentById)

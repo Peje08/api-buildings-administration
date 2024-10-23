@@ -1,5 +1,5 @@
 exports.uploadFileToHosting = (file) => {
-    // TODO implement
+    return "https://www.google.com/"
 };
 
 exports.deleteFileFromHosting = (file) => {
