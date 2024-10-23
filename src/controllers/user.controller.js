@@ -3,8 +3,10 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const Administration = require('../models/Administration')
 const crypto = require('crypto')
-const nodemailer = require('nodemailer')
-const { recoveryMail } = require('../utils/recoveryMail')
+const { recoveryMail } = require('../utils/templates/recoveryMail')
+const { hashPassword } = require('../utils/hashPassword')
+const sendEmail = require('../utils/sendEmail')
+const { activationMail } = require('../utils/templates/activationMail')
 
 // Helper function to generate access and refresh tokens
 const generateTokens = (userId, type) => {
@@ -46,8 +48,7 @@ exports.register = async (req, res) => {
 		}
 
 		// Hash the password
-		const salt = await bcrypt.genSalt(10)
-		const hashedPassword = await bcrypt.hash(password, salt)
+		const hashedPassword = await hashPassword(password)
 
 		// Create a new user
 		user = new User({
@@ -55,13 +56,14 @@ exports.register = async (req, res) => {
 			email,
 			password: hashedPassword,
 			cellularNumer,
-			type
+			type,
+			isActive: false
 		})
 
 		await user.save()
 
 		// Check if the user type is 'ADMINISTRATION' to create a corresponding administration
-		if (type === 'ADMINISTRATION') {
+		if (type === 'ADMINISTRATION' || type === 'SUPERUSER') {
 			const friendlyId = `${user._id.toString().slice(-4)}`
 
 			// Create the administration
@@ -75,12 +77,18 @@ exports.register = async (req, res) => {
 			await newAdministration.save()
 		}
 
+		// Send activation email with a link to the frontend activation page
+		const activationLink = `${process.env.CABILDO_FRONT_URL}/activate-account/${user._id}`
+		const emailContent = activationMail(username, activationLink)
+		await sendEmail(user.email, 'Confirma tu cuenta en Cabildo', emailContent)
+
 		// Generate tokens
 		const { accessToken, refreshToken } = generateTokens(user._id, user.type)
 
 		const response = { accessToken, refreshToken, userId: user._id }
 
-		if (type === 'ADMINISTRATION') response.administrationId = newAdministration._id
+		if (type === 'ADMINISTRATION' || type === 'SUPERUSER')
+			response.administrationId = newAdministration._id
 
 		res.status(201).json(response)
 	} catch (error) {
@@ -96,8 +104,8 @@ exports.login = async (req, res) => {
 	try {
 		// Verify if the user exists
 		const user = await User.findOne({ email })
-		if (!user) {
-			return res.status(400).json({ message: 'Invalid credentials.' })
+		if (!user || !user.isActive) {
+			return res.status(400).json({ message: 'Invalid credentials or inactive user.' })
 		}
 
 		// Compare the password
@@ -109,7 +117,20 @@ exports.login = async (req, res) => {
 		// Generate tokens
 		const { accessToken, refreshToken } = generateTokens(user._id, user.type)
 
-		res.status(200).json({ accessToken, refreshToken, userId: user._id })
+		// Prepare the response object
+		const response = { accessToken, refreshToken, userId: user._id }
+
+		// If the user type is 'ADMINISTRATION', retrieve the corresponding administration
+		if (user.type === 'ADMINISTRATION' || user.type === 'SUPERUSER') {
+			const administration = await Administration.findOne({ ownerId: user._id })
+
+			if (administration) {
+				response.administrationId = administration._id
+			}
+		}
+
+		// Send the response
+		res.status(200).json(response)
 	} catch (error) {
 		res.status(500).json({ message: 'Error logging in.', error })
 	}
@@ -161,26 +182,12 @@ exports.forgotPassword = async (req, res) => {
 		await user.save()
 
 		// Create a reset URL
-		const resetUrl = `https://cabildo-fe.vercel.app/reset-password/${resetToken}`
+		const resetUrl = `${process.env.CABILDO_FRONT_URL}/reset-password/${resetToken}`
 
-		// Configure nodemailer
-		const transporter = nodemailer.createTransport({
-			service: 'gmail',
-			auth: {
-				user: process.env.EMAIL_USER,
-				pass: process.env.EMAIL_PASSWORD
-			}
-		})
+		const subject = 'Solicitud de restablecimiento de contraseña'
+		const htmlContent = recoveryMail(resetUrl, user.username)
 
-		const mailOptions = {
-			to: user.email,
-			from: process.env.EMAIL_USER,
-			subject: 'Solicitud de restablecimiento de contraseña',
-			html: recoveryMail(resetUrl, user.name)
-		}
-
-		// Send the email
-		await transporter.sendMail(mailOptions)
+		await sendEmail(user.email, subject, htmlContent)
 
 		res.status(200).json({ message: 'Password reset email sent.' })
 	} catch (error) {
@@ -238,5 +245,45 @@ exports.resetPassword = async (req, res) => {
 		res.status(200).json({ message: 'Password reset successfully.' })
 	} catch (error) {
 		res.status(500).json({ message: 'Error resetting password.', error })
+	}
+}
+
+// Deactivate user (soft delete)
+exports.deactivateUser = async (req, res) => {
+	const { userId } = req.params
+
+	try {
+		// Find the user by ID and set isActive to false
+		const user = await User.findByIdAndUpdate(userId, { isActive: false }, { new: true }).select(
+			'-password'
+		)
+
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' })
+		}
+
+		res.status(200).json({ message: 'User deactivated successfully', user })
+	} catch (error) {
+		res.status(500).json({ message: 'Error deactivating user', error })
+	}
+}
+
+// Reactivate user
+exports.reactivateUser = async (req, res) => {
+	const { userId } = req.params
+
+	try {
+		// Find the user by ID and set isActive to true
+		const user = await User.findByIdAndUpdate(userId, { isActive: true }, { new: true }).select(
+			'-password'
+		)
+
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' })
+		}
+
+		res.status(200).json({ message: 'User reactivated successfully', user })
+	} catch (error) {
+		res.status(500).json({ message: 'Error reactivating user', error })
 	}
 }

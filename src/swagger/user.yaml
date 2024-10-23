@@ -29,6 +29,11 @@ paths:
                   example: '1234567890'
                 type:
                   type: string
+                  enum:
+                    - SUPERUSER
+                    - TENANT
+                    - OWNER
+                    - ADMINISTRATION
                   example: 'SUPERUSER'
       responses:
         '201':
@@ -44,6 +49,9 @@ paths:
                     type: string
                   userId:
                     type: string
+                  administrationId:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f3' # Only for ADMINISTRATION type users
         '400':
           description: User already registered
         '500':
@@ -82,8 +90,11 @@ paths:
                     type: string
                   userId:
                     type: string
+                  administrationId:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f3' # Only for ADMINISTRATION type users
         '400':
-          description: Invalid credentials
+          description: Invalid credentials or inactive user
         '500':
           description: Error logging in
 
@@ -117,3 +128,79 @@ paths:
           description: Invalid or missing refresh token
         '500':
           description: Error refreshing token
+
+  /user/deactivate/{userId}:
+    put:
+      summary: Deactivate a user (soft delete)
+      description: Deactivates a user by setting the isActive flag to false.
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f4'
+      responses:
+        '200':
+          description: User deactivated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User deactivated successfully'
+                  user:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: '64f9a5b7c2e4d3a9b8a0e1f4'
+                      isActive:
+                        type: boolean
+                        example: false
+        '404':
+          description: User not found
+        '500':
+          description: Error deactivating user
+
+  /user/reactivate/{userId}:
+    put:
+      summary: Reactivate a user
+      description: Reactivates a user by setting the isActive flag to true.
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f4'
+      responses:
+        '200':
+          description: User reactivated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User reactivated successfully'
+                  user:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: '64f9a5b7c2e4d3a9b8a0e1f4'
+                      isActive:
+                        type: boolean
+                        example: true
+        '404':
+          description: User not found
+        '500':
+          description: Error reactivating user
