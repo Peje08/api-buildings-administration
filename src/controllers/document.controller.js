@@ -51,19 +51,24 @@ exports.updateDocument = async (req, res) => {
     if (!currentDocument) {
         return res.status(404).json({ message: 'Document not found' })
     }
+
     try {
+        const oldId = currentDocument.documentPublicId
+
         currentDocument.type = type
         currentDocument.date = date
+
         const uploadedDocument = await uploadFileToHosting(file);
-        const oldId = currentDocument.documentPublicId
         currentDocument.documentUrl = uploadedDocument.url
         currentDocument.documentPublicId = uploadedDocument.public_id
+
         await deleteFileFromHosting(oldId)
+
         await currentDocument.save()
+
         return res.status(200).json(currentDocument)
     }
     catch (error) {
-        console.error({ error })
         res.status(500).json({ message: 'Error updating file.' + error.message })
     }
 }
@@ -71,11 +76,13 @@ exports.updateDocument = async (req, res) => {
 
 // Delete a document by ID
 exports.deleteDocument = async (req, res) => {
+
+    const currentDocument = await Document.findById(req.params.id)
+    if (!currentDocument) {
+        return res.status(404).json({ message: 'Document not found' })
+    }
+
     try {
-        const currentDocument = await Document.findById(req.params.id)
-        if (!currentDocument) {
-            return res.status(404).json({ message: 'Document not found' })
-        }
         await deleteFileFromHosting(currentDocument.documentPublicId)
         await currentDocument.deleteOne()
         res.status(200).json({ message: 'Document unit deleted successfully' })
