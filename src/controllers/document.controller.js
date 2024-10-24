@@ -106,21 +106,21 @@ const getDocumentsByQuery = async (res, id, type, key) => {
 };
 
 // Get all documents from a functional Unit by ID
-exports.getDocumentsFromFU = async (req, res) => {
+exports.getDocumentsFromFU = (req, res) => {
     const functionalUnitId = req.params.id
     const { type } = req.body
     getDocumentsByQuery(res, functionalUnitId, type, "functionalUnitId");
 }
 
 // Get all documents from a building Unit by ID
-exports.getDocumentsFromBuilding = async (req, res) => {
+exports.getDocumentsFromBuilding = (req, res) => {
     const buildingId = req.params.id
     const { type } = req.body
     getDocumentsByQuery(res, buildingId, type, "buildingId");
 }
 
 // Get all documents from a user by ID
-exports.getDocumentsFromUser = async (req, res) => {
+exports.getDocumentsFromUser = (req, res) => {
     const ownerId = req.params.id
     const { type } = req.body
     getDocumentsByQuery(res, ownerId, type, "ownerId");
