@@ -14,6 +14,10 @@ const DocumentSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        documentPublicId: {
+            type: String,
+            required: true
+        },
         date: {
             type: Date,
             required: true

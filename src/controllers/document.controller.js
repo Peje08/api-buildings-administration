@@ -1,25 +1,27 @@
+/* eslint-disable camelcase */
 const Document = require("../models/Document");
 const { deleteFileFromHosting, uploadFileToHosting } = require('./fileHostingController')
 
 // Create a new document and upload the file to the hosting
 exports.createDocument = async (req, res) => {
-    const { ownerId, functionalUnitId, buildingId, type, date, file } = req.body
-    let documentId = ""
+    const { ownerId, functionalUnitId, buildingId, type, date, docUrl } = req.body
+
     try {
-        const documentUrl = uploadFileToHosting(file)
+        const uploadedDocument = await uploadFileToHosting(docUrl)
+        const { url, public_id } = uploadedDocument
         const newDocument = new Document({
             ownerId,
             functionalUnitId,
             buildingId,
             type,
-            documentUrl,
+            documentUrl: url,
+            documentPublicId: public_id,
             date
         })
+
         await newDocument.save()
-        documentId = newDocument._id
-        res.status(201).json({ message: 'Document created. ', id: documentId })
+        res.status(201).json({ message: 'Document created. ', id: newDocument._id })
     } catch (error) {
-        console.log({ error })
         res.status(500).json({ message: 'Error uploading file.' + error.message })
     }
 }
@@ -43,24 +45,25 @@ exports.getDocumentById = async (req, res) => {
 // Update a document by ID
 exports.updateDocument = async (req, res) => {
     const documentId = req.params.id
-    const {  type, date, file } = req.body
-    try {
+    const { type, date, file } = req.body
 
-        const currentDocument = await Document.findById(documentId)
-        if (!currentDocument) {
-            return res.status(404).json({ message: 'Document not found' })
-        }
+    const currentDocument = await Document.findById(documentId)
+    if (!currentDocument) {
+        return res.status(404).json({ message: 'Document not found' })
+    }
+    try {
         currentDocument.type = type
         currentDocument.date = date
-        const newFileUrl = uploadFileToHosting(file);
-        deleteFileFromHosting(file)
-        currentDocument.documentUrl = newFileUrl
+        const uploadedDocument = await uploadFileToHosting(file);
+        const oldId = currentDocument.documentPublicId
+        currentDocument.documentUrl = uploadedDocument.url
+        currentDocument.documentPublicId = uploadedDocument.public_id
+        await deleteFileFromHosting(oldId)
         await currentDocument.save()
-
         return res.status(200).json(currentDocument)
     }
     catch (error) {
-        console.log({ error })
+        console.error({ error })
         res.status(500).json({ message: 'Error updating file.' + error.message })
     }
 }
@@ -68,26 +71,50 @@ exports.updateDocument = async (req, res) => {
 
 // Delete a document by ID
 exports.deleteDocument = async (req, res) => {
-    const currentDocument = await Document.findById(req.params.id)
-    if (!currentDocument) {
-        return res.status(404).json({ message: 'Document not found' })
+    try {
+        const currentDocument = await Document.findById(req.params.id)
+        if (!currentDocument) {
+            return res.status(404).json({ message: 'Document not found' })
+        }
+        await deleteFileFromHosting(currentDocument.documentPublicId)
+        await currentDocument.deleteOne()
+        res.status(200).json({ message: 'Document unit deleted successfully' })
     }
-    deleteFileFromHosting(currentDocument)
-    await currentDocument.deleteOne()
-    res.status(200).json({ message: 'Document unit deleted successfully' })
-
+    catch (error) {
+        res.status(500).json({ message: 'Error deleting file' + error.message })
+    }
 }
+
+// Helper function to get documents by query key (functionalUnitId, buildingId, ownerId)
+const getDocumentsByQuery = async (res, id, type, key) => {
+    const query = type ? { [key]: id, type } : { [key]: id };
+
+    const documents = await Document.find(query);
+
+    if (documents.length === 0) {
+        return res.status(200).json({ message: "No documents found" });
+    } else {
+        return res.status(200).json(documents);
+    }
+};
 
 // Get all documents from a functional Unit by ID
 exports.getDocumentsFromFU = async (req, res) => {
     const functionalUnitId = req.params.id
-    const documents = await Document.find({ functionalUnitId })
-    res.status(200).json(documents)
+    const { type } = req.body
+    getDocumentsByQuery(res, functionalUnitId, type, "functionalUnitId");
 }
 
 // Get all documents from a building Unit by ID
 exports.getDocumentsFromBuilding = async (req, res) => {
     const buildingId = req.params.id
-    const documents = await Document.find({ buildingId })
-    res.status(200).json(documents)
+    const { type } = req.body
+    getDocumentsByQuery(res, buildingId, type, "buildingId");
+}
+
+// Get all documents from a user by ID
+exports.getDocumentsFromUser = async (req, res) => {
+    const ownerId = req.params.id
+    const { type } = req.body
+    getDocumentsByQuery(res, ownerId, type, "ownerId");
 }

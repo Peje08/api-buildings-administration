@@ -18,9 +18,13 @@ router.put('/:id', documentController.updateDocument)
 router.delete('/:id', documentController.deleteDocument)
 
 // Get all documents from a functional Unit by ID
-router.get('/getFromFU/:id', documentController.getDocumentsFromFU)
+router.get('/fromFU/:id', documentController.getDocumentsFromFU)
 
 // Get all documents from a building Unit by ID
-router.get('/getFromBuilding/:id', documentController.getDocumentsFromBuilding)
+router.get('/fromBuilding/:id', documentController.getDocumentsFromBuilding)
+
+// Get all documents from a user by ID
+router.get('/fromUser/:id', documentController.getDocumentsFromUser)
+
 
 module.exports = router

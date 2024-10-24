@@ -1,7 +1,21 @@
+const { uploadToCloudinary, deleteFromCloudinary } = require("./cloudinaryController");
+
 exports.uploadFileToHosting = (file) => {
-    return "https://www.google.com/"
+    try {
+        const result = uploadToCloudinary(file)
+        console.log('File uploaded:', result);
+        return result
+    } catch (error) {
+        console.error('Error uploading file:', error);
+    }
 };
 
-exports.deleteFileFromHosting = (file) => {
-    // TODO implement
+exports.deleteFileFromHosting = (document) => {
+    try {
+        const result = deleteFromCloudinary(document)
+        console.log('File deleted');
+        return result
+    } catch (error) {
+        console.error('Error deleting file:', error);
+    }
 }
