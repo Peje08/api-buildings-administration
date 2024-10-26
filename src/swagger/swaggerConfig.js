@@ -6,6 +6,7 @@ const planDoc = YAML.load('src/swagger/plan.yaml')
 const buildingDoc = YAML.load('src/swagger/building.yaml')
 const towerDoc = YAML.load('src/swagger/tower.yaml')
 const functionalUnitDoc = YAML.load('src/swagger/functionalUnit.yaml')
+const documentDoc = YAML.load('src/swagger/document.yaml')
 const baseDoc = YAML.load('src/swagger/index.yaml')
 
 const swaggerDocument = {
@@ -16,7 +17,8 @@ const swaggerDocument = {
 		...planDoc.paths,
 		...buildingDoc.paths,
 		...towerDoc.paths,
-		...functionalUnitDoc.paths
+		...functionalUnitDoc.paths,
+		...documentDoc.paths
 	},
 	components: {
 		...baseDoc.components

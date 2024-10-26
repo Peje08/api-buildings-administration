@@ -227,8 +227,6 @@ const createUserForFunctionalUnit = async (ufData, adminName, streetAddress, num
 		const password = crypto.randomBytes(8).toString('hex')
 		const hashedPassword = await hashPassword(password)
 
-		// console.log({ email: mail, password, hashedPassword })
-
 		user = new User({
 			username: fullName,
 			email: mail,

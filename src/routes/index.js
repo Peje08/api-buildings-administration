@@ -17,7 +17,7 @@ appRouter.use('/buildings', authMiddleware, buildingRoutes)
 appRouter.use('/towers', authMiddleware, towerRoutes)
 appRouter.use('/functional-units', authMiddleware, functionalUnitRoutes)
 appRouter.use('/plans', authMiddleware, planRoutes)
-appRouter.use('/documents', documentRoutes)
+appRouter.use('/documents', authMiddleware, documentRoutes)
 appRouter.use('/user', userRoutes)
 
 module.exports = appRouter
