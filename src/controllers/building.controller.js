@@ -335,7 +335,15 @@ exports.createBuilding = async (req, res) => {
 // Get all Buildings
 exports.getAllBuildings = async (req, res) => {
 	try {
-		const buildings = await Building.find().populate('administrationId').populate('planId')
+		const buildings = await Building.find()
+			.populate('administrationId')
+			.populate('planId')
+			.populate({
+				path: 'towersData',
+				populate: {
+					path: 'functionalUnitsData'
+				}
+			})
 		res.status(200).json(buildings)
 	} catch (error) {
 		res.status(500).json({ message: 'Error retrieving buildings', error: error.message })
@@ -348,6 +356,12 @@ exports.getBuildingById = async (req, res) => {
 		const building = await Building.findById(req.params.id)
 			.populate('administrationId')
 			.populate('planId')
+			.populate({
+				path: 'towersData',
+				populate: {
+					path: 'functionalUnitsData'
+				}
+			})
 		if (!building) {
 			return res.status(404).json({ message: 'Building not found' })
 		}
