@@ -98,7 +98,8 @@ exports.createFullBuilding = async (req, res) => {
 							ufData,
 							administration.name,
 							street,
-							number
+							number,
+							newBuilding._id
 						)
 						const newFunctionalUnit = await createFunctionalUnit(
 							newTower,
@@ -126,7 +127,8 @@ exports.createFullBuilding = async (req, res) => {
 							ufData,
 							administration.name,
 							street,
-							number
+							number,
+							newBuilding._id
 						)
 						const newFunctionalUnit = await createFunctionalUnit(
 							newTower,
@@ -157,7 +159,8 @@ exports.createFullBuilding = async (req, res) => {
 								ufData,
 								administration.name,
 								street,
-								number
+								number,
+								newBuilding._id
 							)
 							const newFunctionalUnit = await createFunctionalUnit(
 								newTower,
@@ -218,7 +221,13 @@ exports.createFullBuilding = async (req, res) => {
 }
 
 // Function to create a user for each functional unit
-const createUserForFunctionalUnit = async (ufData, adminName, streetAddress, numberAddress) => {
+const createUserForFunctionalUnit = async (
+	ufData,
+	adminName,
+	streetAddress,
+	numberAddress,
+	buildingId
+) => {
 	const { fullName, mail, cellularNumber } = ufData
 
 	// Check if the user already exists
@@ -229,10 +238,13 @@ const createUserForFunctionalUnit = async (ufData, adminName, streetAddress, num
 
 		user = new User({
 			username: fullName,
+			buildingId,
 			email: mail,
 			password: hashedPassword,
 			cellularNumer: cellularNumber || '',
-			type: ufData.type // 'OWNER' or 'TENANT'
+			type: ufData.type, // 'OWNER' or 'TENANT'
+			streetName: streetAddress,
+			streetNumber: numberAddress
 		})
 
 		await user.save()

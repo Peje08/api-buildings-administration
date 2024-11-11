@@ -26,6 +26,19 @@ const UserSchema = new mongoose.Schema(
 		isActive: {
 			type: Boolean,
 			default: true
+		},
+		buildingId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Building',
+			required: function () {
+				return this.type === 'TENANT' || this.type === 'OWNER'
+			}
+		},
+		streetName: {
+			type: String
+		},
+		streetNumber: {
+			type: String
 		}
 	},
 	{ timestamps: true }
