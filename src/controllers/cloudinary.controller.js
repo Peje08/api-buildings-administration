@@ -1,13 +1,22 @@
 const cloudinary = require('cloudinary').v2
 require('dotenv').config()
 
+const fs = require('fs')
+const util = require('util')
+const unlinkFile = util.promisify(fs.unlink)
+
 const getResourceType = (filePath) => {
-	const extension = filePath.substr(filePath.length - 4)
-	const resourceType = {}
-	if (extension === '.pdf') {
-		resourceType.resource_type = 'raw'
+	const extension = filePath.split('.').pop().toLowerCase()
+
+	if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension)) {
+		return { resource_type: 'image' }
+	} else if (['mp4', 'avi', 'mov', 'mkv', 'webm'].includes(extension)) {
+		return { resource_type: 'video' }
+	} else if (['pdf'].includes(extension)) {
+		return { resource_type: 'raw' }
+	} else {
+		return { resource_type: 'raw' }
 	}
-	return resourceType
 }
 
 const folderMapping = {
@@ -25,8 +34,8 @@ cloudinary.config({
 
 exports.uploadToCloudinary = async (filePath, type) => {
 	if (!filePath) {
-		console.error('missing file path')
-		return
+		console.error('Missing file path')
+		throw new Error('File path is required')
 	}
 	const resourceType = getResourceType(filePath)
 	const folder = folderMapping[type] || 'Cabildo/otros'
@@ -39,6 +48,7 @@ exports.uploadToCloudinary = async (filePath, type) => {
 		folder,
 		public_id: publicId
 	})
+	await unlinkFile(filePath)
 	return result
 }
 

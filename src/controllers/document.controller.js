@@ -1,28 +1,42 @@
 /* eslint-disable camelcase */
 const Document = require('../models/Document')
+const upload = require('../services/multer')
 const { deleteFileFromHosting, uploadFileToHosting } = require('./fileHosting.controller')
+
+exports.uploadMiddleware = upload.single('file')
 
 // Create a new document and upload the file to the hosting
 exports.createDocument = async (req, res) => {
-	const { ownerId, functionalUnitId, buildingId, type, date, docUrl } = req.body
+	const { ownerId, functionalUnitId, buildingId, type, date } = req.body
+
+	if (!functionalUnitId && !buildingId) {
+		return res.status(400).json({
+			message: 'Either functionalUnitId or buildingId must be provided.'
+		})
+	}
 
 	try {
-		const uploadedDocument = await uploadFileToHosting(docUrl, type)
+		const uploadedDocument = await uploadFileToHosting(req.file.path, type)
 		const { url, public_id } = uploadedDocument
+
 		const newDocument = new Document({
 			ownerId,
-			functionalUnitId,
-			buildingId,
+			functionalUnitId: functionalUnitId || null,
+			buildingId: buildingId || null,
 			type,
 			documentUrl: url,
 			documentPublicId: public_id,
 			date
 		})
 
+		// Guardar en la base de datos
 		await newDocument.save()
-		res.status(201).json({ message: 'Document created. ', id: newDocument._id })
+
+		// Enviar la respuesta exitosa
+		res.status(201).json({ message: 'Document created.', id: newDocument._id })
 	} catch (error) {
-		res.status(500).json({ message: 'Error uploading file.' + error.message })
+		console.error('Error creating document:', error)
+		res.status(500).json({ message: 'Error uploading file. ' + error.message })
 	}
 }
 
