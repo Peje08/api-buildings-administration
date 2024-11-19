@@ -7,6 +7,7 @@ exports.uploadFileToHosting = async (file, type) => {
 		return result
 	} catch (error) {
 		console.error('Error uploading file:', error)
+		throw new Error('Failed to upload file to hosting')
 	}
 }
 
@@ -17,5 +18,6 @@ exports.deleteFileFromHosting = (document) => {
 		return result
 	} catch (error) {
 		console.error('Error deleting file:', error)
+		throw new Error('Failed to delete file from hosting')
 	}
 }
