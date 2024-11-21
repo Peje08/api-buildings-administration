@@ -287,3 +287,37 @@ exports.reactivateUser = async (req, res) => {
 		res.status(500).json({ message: 'Error reactivating user', error })
 	}
 }
+
+
+exports.editUser = async (req, res) => {
+	const { userId } = req.params
+	const { username, oldPassword, newPassword, cellularNumber } = req.body
+
+	try {
+		const user = await User.findById(userId)
+
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' })
+		}
+
+		// Compare the password
+		const isMatch = await bcrypt.compare(oldPassword, user.password)
+		if (!isMatch) {
+			return res.status(400).json({ message: 'Invalid credentials.' })
+		}
+
+		// Hash the password
+		const newHashedPassword = await hashPassword(newPassword)
+
+		user.password = newHashedPassword
+		user.username = username
+		user.cellularNumber = cellularNumber
+
+		await user.save()
+
+		res.status(200).json({ message: 'User edited successfully', user })
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ message: 'Error editing user', error })
+	}
+}

@@ -29,4 +29,7 @@ router.put('/deactivate/:userId', userController.deactivateUser)
 // Reactivate user (optional)
 router.put('/reactivate/:userId', userController.reactivateUser)
 
+// Edit user
+router.put('/edit/:userId', userController.editUser)
+
 module.exports = router

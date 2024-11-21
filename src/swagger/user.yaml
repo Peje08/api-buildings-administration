@@ -204,3 +204,152 @@ paths:
           description: User not found
         '500':
           description: Error reactivating user
+  /user/edit/{userId}:
+    put:
+      summary: Edit user details
+      description: Allows a user to edit their details, including username, password, and cellular number.
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f4'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: 'new_username'
+                oldPassword:
+                  type: string
+                  example: 'oldPassword123'
+                newPassword:
+                  type: string
+                  example: 'newPassword456'
+                cellularNumber:
+                  type: string
+                  example: '0987654321'
+      responses:
+        '200':
+          description: User edited successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User edited successfully'
+                  user:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: '64f9a5b7c2e4d3a9b8a0e1f4'
+                      username:
+                        type: string
+                        example: 'new_username'
+                      cellularNumber:
+                        type: string
+                        example: '0987654321'
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid credentials.'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User not found'
+        '500':
+          description: Error editing user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Error editing user'
+                  error:
+                    type: object
+
+  /user/{id}:
+    get:
+      summary: Get user by ID
+      description: Retrieves a user's details by their ID.
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: '64f9a5b7c2e4d3a9b8a0e1f4'
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '64f9a5b7c2e4d3a9b8a0e1f4'
+                  username:
+                    type: string
+                    example: 'JohnDoe'
+                  email:
+                    type: string
+                    example: 'johndoe@example.com'
+                  cellularNumber:
+                    type: string
+                    example: '1234567890'
+                  type:
+                    type: string
+                    example: 'TENANT'
+                  isActive:
+                    type: boolean
+                    example: true
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User not found'
+        '500':
+          description: Error retrieving user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Error retrieving user'
+                  error:
+                    type: object
