@@ -15,31 +15,31 @@ paths:
                 ownerId:
                   type: string
                   description: The ID of the user who owns the document
-                  example: '60f6b3f63a3b3c001b8f4f7a'
+                  example: "60f6b3f63a3b3c001b8f4f7a"
                 functionalUnitId:
                   type: string
                   description: The ID of the functional unit associated with the document
-                  example: '60f6b3f63a3b3c001b8f4f7b'
+                  example: "60f6b3f63a3b3c001b8f4f7b"
                 buildingId:
                   type: string
                   description: The ID of the building associated with the document
-                  example: '60f6b3f63a3b3c001b8f4f7c'
+                  example: "60f6b3f63a3b3c001b8f4f7c"
                 type:
                   type: string
                   description: The type of document
                   enum: [SUMMARY, CLAIM, REQUEST, VOUCHER]
-                  example: 'SUMMARY'
+                  example: "SUMMARY"
                 date:
                   type: string
                   format: date
                   description: The date of the document
-                  example: '2024-10-06'
+                  example: "2024-10-06"
                 docUrl:
                   type: string
                   description: The file path for the document to be uploaded
-                  example: '/path/to/file.jpg'
+                  example: "/path/to/file.jpg"
       responses:
-        '201':
+        "201":
           description: Document created successfully
           content:
             application/json:
@@ -48,11 +48,11 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: 'Document created.'
+                    example: "Document created."
                   id:
                     type: string
-                    example: '60f6b3f63a3b3c001b8f4f7d'
-        '500':
+                    example: "60f6b3f63a3b3c001b8f4f7d"
+        "500":
           description: Error uploading file
 
     get:
@@ -61,7 +61,7 @@ paths:
       tags:
         - Documents
       responses:
-        '200':
+        "200":
           description: List of documents
           content:
             application/json:
@@ -72,30 +72,30 @@ paths:
                   properties:
                     _id:
                       type: string
-                      example: '60f6b3f63a3b3c001b8f4f7d'
+                      example: "60f6b3f63a3b3c001b8f4f7d"
                     ownerId:
                       type: string
-                      example: '60f6b3f63a3b3c001b8f4f7a'
+                      example: "60f6b3f63a3b3c001b8f4f7a"
                     functionalUnitId:
                       type: string
-                      example: '60f6b3f63a3b3c001b8f4f7b'
+                      example: "60f6b3f63a3b3c001b8f4f7b"
                     buildingId:
                       type: string
-                      example: '60f6b3f63a3b3c001b8f4f7c'
+                      example: "60f6b3f63a3b3c001b8f4f7c"
                     type:
                       type: string
-                      example: 'SUMMARY'
+                      example: "SUMMARY"
                     documentUrl:
                       type: string
-                      example: 'https://cloudinary.com/file.jpg'
+                      example: "https://cloudinary.com/file.jpg"
                     documentPublicId:
                       type: string
-                      example: 'document-12345'
+                      example: "document-12345"
                     date:
                       type: string
                       format: date
-                      example: '2024-10-06'
-        '500':
+                      example: "2024-10-06"
+        "500":
           description: Error retrieving documents
 
   /documents/{id}:
@@ -110,10 +110,10 @@ paths:
           required: true
           schema:
             type: string
-            example: '60f6b3f63a3b3c001b8f4f7d'
+            example: "60f6b3f63a3b3c001b8f4f7d"
           description: The ID of the document
       responses:
-        '200':
+        "200":
           description: Document retrieved successfully
           content:
             application/json:
@@ -122,32 +122,32 @@ paths:
                 properties:
                   _id:
                     type: string
-                    example: '60f6b3f63a3b3c001b8f4f7d'
+                    example: "60f6b3f63a3b3c001b8f4f7d"
                   ownerId:
                     type: string
-                    example: '60f6b3f63a3b3c001b8f4f7a'
+                    example: "60f6b3f63a3b3c001b8f4f7a"
                   functionalUnitId:
                     type: string
-                    example: '60f6b3f63a3b3c001b8f4f7b'
+                    example: "60f6b3f63a3b3c001b8f4f7b"
                   buildingId:
                     type: string
-                    example: '60f6b3f63a3b3c001b8f4f7c'
+                    example: "60f6b3f63a3b3c001b8f4f7c"
                   type:
                     type: string
-                    example: 'SUMMARY'
+                    example: "SUMMARY"
                   documentUrl:
                     type: string
-                    example: 'https://cloudinary.com/file.jpg'
+                    example: "https://cloudinary.com/file.jpg"
                   documentPublicId:
                     type: string
-                    example: 'document-12345'
+                    example: "document-12345"
                   date:
                     type: string
                     format: date
-                    example: '2024-10-06'
-        '404':
+                    example: "2024-10-06"
+        "404":
           description: Document not found
-        '500':
+        "500":
           description: Error retrieving document
 
     put:
@@ -161,7 +161,7 @@ paths:
           required: true
           schema:
             type: string
-            example: '60f6b3f63a3b3c001b8f4f7d'
+            example: "60f6b3f63a3b3c001b8f4f7d"
           description: The ID of the document to update
       requestBody:
         required: true
@@ -173,17 +173,17 @@ paths:
                 type:
                   type: string
                   enum: [SUMMARY, CLAIM, REQUEST, VOUCHER]
-                  example: 'CLAIM'
+                  example: "CLAIM"
                 date:
                   type: string
                   format: date
-                  example: '2024-11-06'
+                  example: "2024-11-06"
                 file:
                   type: string
                   description: New file path for the document to upload
-                  example: '/path/to/new-file.jpg'
+                  example: "/path/to/new-file.jpg"
       responses:
-        '200':
+        "200":
           description: Document updated successfully
           content:
             application/json:
@@ -192,20 +192,20 @@ paths:
                 properties:
                   _id:
                     type: string
-                    example: '60f6b3f63a3b3c001b8f4f7d'
+                    example: "60f6b3f63a3b3c001b8f4f7d"
                   documentUrl:
                     type: string
-                    example: 'https://cloudinary.com/new-file.jpg'
+                    example: "https://cloudinary.com/new-file.jpg"
                   documentPublicId:
                     type: string
-                    example: 'new-document-67890'
+                    example: "new-document-67890"
                   date:
                     type: string
                     format: date
-                    example: '2024-11-06'
-        '404':
+                    example: "2024-11-06"
+        "404":
           description: Document not found
-        '500':
+        "500":
           description: Error updating document
 
     delete:
@@ -219,12 +219,166 @@ paths:
           required: true
           schema:
             type: string
-            example: '60f6b3f63a3b3c001b8f4f7d'
+            example: "60f6b3f63a3b3c001b8f4f7d"
           description: The ID of the document to delete
       responses:
-        '200':
+        "200":
           description: Document deleted successfully
-        '404':
+        "404":
           description: Document not found
-        '500':
+        "500":
           description: Error deleting document
+  /documents/fromFU/{id}:
+    get:
+      summary: Get documents from a functional unit by ID
+      description: Retrieves all documents associated with a specific functional unit.
+      tags:
+        - Documents
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: "60f6b3f63a3b3c001b8f4f7b"
+          description: The ID of the functional unit
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [SUMMARY, CLAIM, REQUEST, VOUCHER]
+            example: "SUMMARY"
+          description: Filter documents by type
+      responses:
+        "200":
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "60f6b3f63a3b3c001b8f4f7d"
+                    functionalUnitId:
+                      type: string
+                      example: "60f6b3f63a3b3c001b8f4f7b"
+                    type:
+                      type: string
+                      example: "SUMMARY"
+                    documentUrl:
+                      type: string
+                      example: "https://cloudinary.com/file.jpg"
+                    date:
+                      type: string
+                      format: date
+                      example: "2024-10-06"
+        "404":
+          description: No documents found
+        "500":
+          description: Error retrieving documents
+  /documents/fromBuilding/{id}:
+    get:
+      summary: Get documents from a building by ID
+      description: Retrieves all documents associated with a specific building.
+      tags:
+        - Documents
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: "60f6b3f63a3b3c001b8f4f7c"
+          description: The ID of the building
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [SUMMARY, CLAIM, REQUEST, VOUCHER]
+            example: "CLAIM"
+          description: Filter documents by type
+      responses:
+        "200":
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "60f6b3f63a3b3c001b8f4f7d"
+                    buildingId:
+                      type: string
+                      example: "60f6b3f63a3b3c001b8f4f7c"
+                    type:
+                      type: string
+                      example: "CLAIM"
+                    documentUrl:
+                      type: string
+                      example: "https://cloudinary.com/file.jpg"
+                    date:
+                      type: string
+                      format: date
+                      example: "2024-10-06"
+        "404":
+          description: No documents found
+        "500":
+          description: Error retrieving documents
+
+  /documents/fromUser/{id}:
+    get:
+      summary: Get documents from a user by ID
+      description: Retrieves all documents owned by a specific user.
+      tags:
+        - Documents
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: "60f6b3f63a3b3c001b8f4f7a"
+          description: The ID of the user
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [SUMMARY, CLAIM, REQUEST, VOUCHER]
+            example: "REQUEST"
+          description: Filter documents by type
+      responses:
+        "200":
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "60f6b3f63a3b3c001b8f4f7d"
+                    ownerId:
+                      type: string
+                      example: "60f6b3f63a3b3c001b8f4f7a"
+                    type:
+                      type: string
+                      example: "REQUEST"
+                    documentUrl:
+                      type: string
+                      example: "https://cloudinary.com/file.jpg"
+                    date:
+                      type: string
+                      format: date
+                      example: "2024-10-06"
+        "404":
+          description: No documents found
+        "500":
+          description: Error retrieving documents
