@@ -7,6 +7,7 @@ const { recoveryMail } = require('../utils/templates/recoveryMail')
 const { hashPassword } = require('../utils/hashPassword')
 const sendEmail = require('../utils/sendEmail')
 const { activationMail } = require('../utils/templates/activationMail')
+const { isEmptyOrNull } = require('../utils/utils')
 
 // Helper function to generate access and refresh tokens
 const generateTokens = (userId, type) => {
@@ -306,12 +307,19 @@ exports.editUser = async (req, res) => {
 			return res.status(400).json({ message: 'Invalid credentials.' })
 		}
 
-		// Hash the password
-		const newHashedPassword = await hashPassword(newPassword)
+		if (!isEmptyOrNull(newPassword)) {
+			// Hash the password
+			const newHashedPassword = await hashPassword(newPassword)
+			user.password = newHashedPassword
+		}
 
-		user.password = newHashedPassword
-		user.username = username
-		user.cellularNumber = cellularNumber
+		if (!isEmptyOrNull(username)) {
+			user.username = username
+		}
+
+		if (!isEmptyOrNull(cellularNumber)) {
+			user.cellularNumber = cellularNumber
+		}
 
 		await user.save()
 
