@@ -1,7 +1,7 @@
 
 exports.isEmptyOrNull = (str) => {
     if (typeof str !== "string") {
-        return false;
+        return true;
     }
     return str === null || str === undefined || str.trim() === "";
 }
