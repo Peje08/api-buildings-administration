@@ -241,7 +241,7 @@ const createUserForFunctionalUnit = async (
 			buildingId,
 			email: mail,
 			password: hashedPassword,
-			cellularNumer: cellularNumber || '',
+			cellularNumber: cellularNumber || '',
 			type: ufData.type, // 'OWNER' or 'TENANT'
 			streetName: streetAddress,
 			streetNumber: numberAddress

@@ -38,7 +38,7 @@ exports.getUserById = async (req, res) => {
 
 // User register
 exports.register = async (req, res) => {
-	const { username, email, password, cellularNumer, type } = req.body
+	const { username, email, password, cellularNumber, type } = req.body
 
 	try {
 		// Verify if the user already exists
@@ -56,7 +56,7 @@ exports.register = async (req, res) => {
 			username,
 			email,
 			password: hashedPassword,
-			cellularNumer,
+			cellularNumber,
 			type,
 			isActive: false
 		})

@@ -40,6 +40,7 @@ const UserSchema = new mongoose.Schema(
 		streetNumber: {
 			type: String
 		}
+		
 	},
 	{ timestamps: true }
 )

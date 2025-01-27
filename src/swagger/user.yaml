@@ -24,7 +24,7 @@ paths:
                 password:
                   type: string
                   example: 'password123'
-                cellularNumer:
+                cellularNumber:
                   type: string
                   example: '1234567890'
                 type:

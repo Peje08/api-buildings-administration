@@ -33,7 +33,7 @@ paths:
                         email:
                           type: string
                           example: 'fedmilo91@gmail.com'
-                        cellularNumer:
+                        cellularNumber:
                           type: string
                           example: '2213080328'
                         type:
@@ -144,7 +144,7 @@ paths:
                       email:
                         type: string
                         example: 'fedmilo91@gmail.com'
-                      cellularNumer:
+                      cellularNumber:
                         type: string
                         example: '2213080328'
                       type:
