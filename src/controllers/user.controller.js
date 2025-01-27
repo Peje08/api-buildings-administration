@@ -320,7 +320,7 @@ exports.editUser = async (req, res) => {
 		if (!isEmptyOrNull(cellularNumber)) {
 			user.cellularNumber = cellularNumber
 		}
-
+		user.firstTime = false
 		await user.save()
 
 		res.status(200).json({ message: 'User edited successfully', user })

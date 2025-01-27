@@ -39,8 +39,12 @@ const UserSchema = new mongoose.Schema(
 		},
 		streetNumber: {
 			type: String
+		},
+		firstTime: {
+			type: Boolean,
+			default: true
 		}
-		
+
 	},
 	{ timestamps: true }
 )
