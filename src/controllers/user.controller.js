@@ -8,6 +8,7 @@ const { hashPassword } = require('../utils/hashPassword')
 const sendEmail = require('../utils/sendEmail')
 const { activationMail } = require('../utils/templates/activationMail')
 const { isEmptyOrNull } = require('../utils/utils')
+const { passwordResetSuccessMail } = require('../utils/templates/passwordResetSuccessMail')
 
 // Helper function to generate access and refresh tokens
 const generateTokens = (userId, type) => {
@@ -236,10 +237,16 @@ exports.resetPassword = async (req, res) => {
 		const salt = await bcrypt.genSalt(10)
 		const hashedPassword = await bcrypt.hash(newPassword, salt)
 
-		// Actualizamos la contraseña pero **no eliminamos el token**
+		// Actualizar la contraseña y limpiar el reset token
 		user.password = hashedPassword
-		user.resetPasswordToken = crypto.randomBytes(32).toString('hex')
+		user.resetPasswordToken = undefined
 		await user.save()
+
+		// Enviar email notificando el cambio de clave
+		const subject = 'Tu contraseña ha sido actualizada con éxito'
+		const htmlContent = passwordResetSuccessMail(user.username)
+
+		await sendEmail(user.email, subject, htmlContent)
 
 		res.status(200).json({ message: 'Contraseña restablecida con éxito.' })
 	} catch (error) {
