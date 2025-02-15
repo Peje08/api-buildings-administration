@@ -7,8 +7,8 @@ const Plan = require('../models/Plan')
 const Tower = require('../models/Tower')
 const User = require('../models/User')
 const { hashPassword } = require('../utils/hashPassword')
-const { welcomeMail } = require('../utils/templates/welcomeMail')
 const sendEmail = require('../utils/sendEmail')
+const { welcomeMail } = require('../utils/templates/welcomeMail')
 const {
 	administrationNotificationMail
 } = require('../utils/templates/administrationNotificationMail')
