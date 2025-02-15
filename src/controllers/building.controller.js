@@ -233,8 +233,10 @@ const createUserForFunctionalUnit = async (
 	// Check if the user already exists
 	let user = await User.findOne({ email: mail })
 	if (!user) {
+		// Generar una contraseña aleatoria para el usuario
 		const password = crypto.randomBytes(8).toString('hex')
 		const hashedPassword = await hashPassword(password)
+		const resetToken = crypto.randomBytes(32).toString('hex')
 
 		user = new User({
 			username: fullName,
@@ -242,14 +244,15 @@ const createUserForFunctionalUnit = async (
 			email: mail,
 			password: hashedPassword,
 			cellularNumber: cellularNumber || '',
-			type: ufData.type, // 'OWNER' or 'TENANT'
+			type: ufData.type, // 'OWNER' o 'TENANT'
 			streetName: streetAddress,
-			streetNumber: numberAddress
+			streetNumber: numberAddress,
+			resetPasswordToken: resetToken
 		})
 
 		await user.save()
 
-		// Send an email with the user's credentials
+		// Enviar email con la contraseña generada (no el enlace de reset)
 		const subject = 'Bienvenido a la plataforma - Tus credenciales'
 		const htmlContent = welcomeMail(
 			adminName,
@@ -259,8 +262,10 @@ const createUserForFunctionalUnit = async (
 			streetAddress,
 			numberAddress
 		)
+
 		await sendEmail(mail, subject, htmlContent)
 	}
+
 	return user
 }
 

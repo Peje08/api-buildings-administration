@@ -56,6 +56,7 @@ exports.register = async (req, res) => {
 			username,
 			email,
 			password: hashedPassword,
+			resetPasswordToken: crypto.randomBytes(32).toString('hex'),
 			cellularNumber,
 			type,
 			isActive: false
@@ -111,6 +112,7 @@ exports.login = async (req, res) => {
 
 		// Compare the password
 		const isMatch = await bcrypt.compare(password, user.password)
+
 		if (!isMatch) {
 			return res.status(400).json({ message: 'Invalid credentials.' })
 		}
@@ -175,7 +177,7 @@ exports.forgotPassword = async (req, res) => {
 
 		// Generate a reset token
 		const resetToken = crypto.randomBytes(32).toString('hex')
-		const resetTokenExpiry = Date.now() + 3600000 // 1 hour expiration
+		const resetTokenExpiry = Date.now() + 3600000
 
 		// Save the reset token and its expiration to the user
 		user.resetPasswordToken = resetToken
@@ -223,29 +225,25 @@ exports.resetPassword = async (req, res) => {
 	const { newPassword } = req.body
 
 	try {
-		// Find the user with the reset token and check if it's still valid
-		const user = await User.findOne({
-			resetPasswordToken: token,
-			resetPasswordExpires: { $gt: Date.now() } // Token is valid if it's still within the expiration time
-		})
+		// Buscar al usuario con el reset token
+		const user = await User.findOne({ resetPasswordToken: token })
 
 		if (!user) {
-			return res.status(400).json({ message: 'Invalid or expired token.' })
+			return res.status(400).json({ message: 'Token inválido.' })
 		}
 
-		// Hash the new password
+		// Hash de la nueva contraseña
 		const salt = await bcrypt.genSalt(10)
 		const hashedPassword = await bcrypt.hash(newPassword, salt)
 
-		// Update the user's password and remove the reset token
+		// Actualizamos la contraseña pero **no eliminamos el token**
 		user.password = hashedPassword
-		user.resetPasswordToken = undefined
-		user.resetPasswordExpires = undefined
+		user.resetPasswordToken = crypto.randomBytes(32).toString('hex')
 		await user.save()
 
-		res.status(200).json({ message: 'Password reset successfully.' })
+		res.status(200).json({ message: 'Contraseña restablecida con éxito.' })
 	} catch (error) {
-		res.status(500).json({ message: 'Error resetting password.', error })
+		res.status(500).json({ message: 'Error al restablecer la contraseña.', error })
 	}
 }
 
@@ -288,7 +286,6 @@ exports.reactivateUser = async (req, res) => {
 		res.status(500).json({ message: 'Error reactivating user', error })
 	}
 }
-
 
 exports.editUser = async (req, res) => {
 	const { userId } = req.params
