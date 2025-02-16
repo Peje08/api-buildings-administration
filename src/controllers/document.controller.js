@@ -2,6 +2,7 @@
 const Document = require('../models/Document')
 const upload = require('../services/multer')
 const { deleteFileFromHosting, uploadFileToHosting } = require('./fileHosting.controller')
+const logger = require('../utils/logger')
 
 exports.uploadMiddleware = upload.single('file')
 
@@ -10,12 +11,14 @@ exports.createDocument = async (req, res) => {
 	const { ownerId, functionalUnitId, buildingId, type, date } = req.body
 
 	if (!functionalUnitId && !buildingId) {
+		logger.warn('Intento de creación fallido: No se proporcionó functionalUnitId ni buildingId.')
 		return res.status(400).json({
-			message: 'Either functionalUnitId or buildingId must be provided.'
+			message: 'Debe proporcionar functionalUnitId o buildingId.'
 		})
 	}
 
 	try {
+		logger.info('Subiendo documento al hosting.')
 		const uploadedDocument = await uploadFileToHosting(req.file.path, type)
 		const { url, public_id } = uploadedDocument
 
@@ -32,41 +35,70 @@ exports.createDocument = async (req, res) => {
 		// Guardar en la base de datos
 		await newDocument.save()
 
-		// Enviar la respuesta exitosa
-		res.status(201).json({ message: 'Document created.', id: newDocument._id })
+		logger.info(`Documento creado con éxito. ID: ${newDocument._id}`)
+		res.status(201).json({ message: 'Documento creado con éxito.', id: newDocument._id })
 	} catch (error) {
-		console.error('Error creating document:', error)
-		res.status(500).json({ message: 'Error uploading file. ' + error.message })
+		logger.error(`Error al crear el documento: ${error.message}`)
+		res.status(500).json({ message: 'Error al subir el archivo. ' + error.message })
 	}
 }
 
-// Create a new document and upload the file to the hosting
+// Get all documents
 exports.getAllDocuments = async (req, res) => {
-	const documents = await Document.find()
-	res.status(200).json(documents)
+	try {
+		logger.info('Solicitud recibida para obtener todos los documentos.')
+
+		const documents = await Document.find()
+
+		logger.info(`Se recuperaron ${documents.length} documentos.`)
+		res.status(200).json(documents)
+	} catch (error) {
+		logger.error(`Error al recuperar los documentos: ${error.message}`)
+		res.status(500).json({ message: 'Error al recuperar los documentos.', error })
+	}
 }
 
 // Get a document by ID
 exports.getDocumentById = async (req, res) => {
-	const documentId = req.params.id
-	const currentDocument = await Document.findById(documentId)
-	if (!currentDocument) {
-		return res.status(404).json({ message: 'Document unit not found' })
+	try {
+		logger.info(`Solicitud recibida para obtener el documento con ID ${req.params.id}.`)
+
+		const documentId = req.params.id
+		const currentDocument = await Document.findById(documentId)
+
+		if (!currentDocument) {
+			logger.warn(
+				`Intento de obtener documento fallido: Documento con ID ${documentId} no encontrado.`
+			)
+			return res.status(404).json({ message: 'El documento no fue encontrado' })
+		}
+
+		logger.info(`Documento con ID ${documentId} recuperado correctamente.`)
+		return res.status(200).json(currentDocument)
+	} catch (error) {
+		logger.error(`Error al recuperar el documento con ID ${req.params.id}: ${error.message}`)
+		res.status(500).json({ message: 'Error al recuperar el documento.', error })
 	}
-	return res.status(200).json(currentDocument)
 }
 
 // Update a document by ID
 exports.updateDocument = async (req, res) => {
-	const documentId = req.params.id
-	const { type, date, file } = req.body
-
-	const currentDocument = await Document.findById(documentId)
-	if (!currentDocument) {
-		return res.status(404).json({ message: 'Document not found' })
-	}
-
 	try {
+		logger.info(`Solicitud recibida para actualizar el documento con ID ${req.params.id}.`)
+
+		const documentId = req.params.id
+		const { type, date, file } = req.body
+
+		const currentDocument = await Document.findById(documentId)
+		if (!currentDocument) {
+			logger.warn(`Intento de actualización fallido: Documento con ID ${documentId} no encontrado.`)
+			return res.status(404).json({ message: 'El documento no fue encontrado' })
+		}
+
+		logger.info(
+			`Actualizando documento con ID ${documentId}. Datos recibidos: ${JSON.stringify(req.body)}`
+		)
+
 		const oldId = currentDocument.documentPublicId
 
 		currentDocument.type = type
@@ -80,38 +112,58 @@ exports.updateDocument = async (req, res) => {
 
 		await currentDocument.save()
 
+		logger.info(`Documento con ID ${documentId} actualizado con éxito.`)
 		return res.status(200).json(currentDocument)
 	} catch (error) {
-		res.status(500).json({ message: 'Error updating file.' + error.message })
+		logger.error(`Error al actualizar el documento con ID ${req.params.id}: ${error.message}`)
+		res.status(500).json({ message: 'Error al actualizar el archivo. ' + error.message })
 	}
 }
 
 // Delete a document by ID
 exports.deleteDocument = async (req, res) => {
-	const currentDocument = await Document.findById(req.params.id)
-	if (!currentDocument) {
-		return res.status(404).json({ message: 'Document not found' })
-	}
-
 	try {
+		logger.info(`Solicitud recibida para eliminar el documento con ID ${req.params.id}.`)
+
+		const currentDocument = await Document.findById(req.params.id)
+		if (!currentDocument) {
+			logger.warn(
+				`Intento de eliminación fallido: Documento con ID ${req.params.id} no encontrado.`
+			)
+			return res.status(404).json({ message: 'El documento no fue encontrado' })
+		}
+
 		await deleteFileFromHosting(currentDocument.documentPublicId)
 		await currentDocument.deleteOne()
-		res.status(200).json({ message: 'Document unit deleted successfully' })
+
+		logger.info(`Documento con ID ${req.params.id} eliminado correctamente.`)
+		res.status(200).json({ message: 'El documento fue eliminado con éxito' })
 	} catch (error) {
-		res.status(500).json({ message: 'Error deleting file' + error.message })
+		logger.error(`Error al eliminar el documento con ID ${req.params.id}: ${error.message}`)
+		res.status(500).json({ message: 'Error al eliminar el archivo. ' + error.message })
 	}
 }
 
 // Helper function to get documents by query key (functionalUnitId, buildingId, ownerId)
 const getDocumentsByQuery = async (res, id, type, key) => {
-	const query = type ? { [key]: id, type } : { [key]: id }
+	try {
+		logger.info(
+			`Solicitud recibida para obtener documentos por ${key}: ${id}, tipo: ${type || 'todos'}.`
+		)
 
-	const documents = await Document.find(query)
+		const query = type ? { [key]: id, type } : { [key]: id }
+		const documents = await Document.find(query)
 
-	if (documents.length === 0) {
-		return res.status(200).json({ message: 'No documents found' })
-	} else {
+		if (documents.length === 0) {
+			logger.info(`No se encontraron documentos con ${key}: ${id}.`)
+			return res.status(200).json({ message: 'No se encontraron documentos' })
+		}
+
+		logger.info(`Se encontraron ${documents.length} documentos con ${key}: ${id}.`)
 		return res.status(200).json(documents)
+	} catch (error) {
+		logger.error(`Error al obtener documentos con ${key}: ${id}: ${error.message}`)
+		res.status(500).json({ message: 'Error al obtener documentos.', error })
 	}
 }
 

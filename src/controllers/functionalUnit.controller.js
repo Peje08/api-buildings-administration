@@ -2,23 +2,32 @@ const { v4: uuidv4 } = require('uuid')
 const FunctionalUnit = require('../models/FunctionalUnit')
 const Tower = require('../models/Tower')
 const User = require('../models/User')
+const logger = require('../utils/logger')
 
 // Create a new Functional Unit
 exports.createFunctionalUnit = async (req, res) => {
 	try {
 		const { towerId, name, type, occupied, tenantUserId, ownerUserId } = req.body
 
+		logger.info(`Solicitud recibida para crear una unidad funcional en la torre ID ${towerId}`)
+
 		// Check if the tower exists
 		const tower = await Tower.findById(towerId)
 		if (!tower) {
-			return res.status(400).json({ message: 'Invalid towerId. Tower does not exist.' })
+			logger.warn(`Intento de creación fallido: Torre con ID ${towerId} no encontrada.`)
+			return res.status(400).json({ message: 'ID de torre inválido. La torre no existe.' })
 		}
 
 		// Check if the tenant exists and is of type TENANT
 		if (tenantUserId) {
 			const tenantExists = await User.findById(tenantUserId)
 			if (!tenantExists || tenantExists.type !== 'TENANT') {
-				return res.status(400).json({ message: 'Invalid tenantUserId or user is not a tenant.' })
+				logger.warn(
+					`Intento de creación fallido: Usuario con ID ${tenantUserId} no es un inquilino válido.`
+				)
+				return res
+					.status(400)
+					.json({ message: 'ID de inquilino inválido o el usuario no es un inquilino.' })
 			}
 		}
 
@@ -33,7 +42,8 @@ exports.createFunctionalUnit = async (req, res) => {
 
 		// If owner is not provided, default to SUPERUSER or ADMINISTRATION as the owner
 		if (!ownerTypeValid && !ownerUserId) {
-			return res.status(400).json({ message: 'Invalid ownerUserId or missing user.' })
+			logger.warn(`Intento de creación fallido: Propietario no válido o faltante.`)
+			return res.status(400).json({ message: 'ID de propietario inválido o usuario faltante.' })
 		}
 
 		// Generate a friendlyId for the functional unit based on the tower's friendlyId
@@ -56,52 +66,78 @@ exports.createFunctionalUnit = async (req, res) => {
 		tower.functionalUnitsData.push(newFunctionalUnit._id)
 		await tower.save()
 
+		logger.info(
+			`Unidad funcional creada con éxito en la torre ID ${towerId}, Friendly ID: ${friendlyId}`
+		)
 		res.status(201).json(newFunctionalUnit)
 	} catch (error) {
-		res.status(500).json({ message: 'Error creating functional unit', error })
+		logger.error(`Error al crear la unidad funcional: ${error.message}`)
+		res.status(500).json({ message: 'Error al crear la unidad funcional', error })
 	}
 }
 
 // Get all Functional Units
 exports.getAllFunctionalUnits = async (req, res) => {
 	try {
+		logger.info('Solicitud recibida para obtener todas las unidades funcionales.')
+
 		const functionalUnits = await FunctionalUnit.find()
 			.populate('tenantUserId', '-password')
 			.populate('ownerUserId', '-password')
+
+		logger.info(`Se recuperaron ${functionalUnits.length} unidades funcionales.`)
 		res.status(200).json(functionalUnits)
 	} catch (error) {
-		res.status(500).json({ message: 'Error retrieving functional units', error })
+		logger.error(`Error al recuperar las unidades funcionales: ${error.message}`)
+		res.status(500).json({ message: 'Error al recuperar las unidades funcionales', error })
 	}
 }
 
 // Get a Functional Unit by ID
 exports.getFunctionalUnitById = async (req, res) => {
 	try {
+		logger.info(`Solicitud recibida para obtener la unidad funcional con ID ${req.params.id}.`)
+
 		const functionalUnit = await FunctionalUnit.findById(req.params.id)
 			.populate('tenantUserId', '-password')
 			.populate('ownerUserId', '-password')
 
 		if (!functionalUnit) {
-			return res.status(404).json({ message: 'Functional unit not found' })
+			logger.warn(
+				`Intento de obtener unidad funcional fallido: Unidad con ID ${req.params.id} no encontrada.`
+			)
+			return res.status(404).json({ message: 'La unidad funcional no fue encontrada' })
 		}
 
+		logger.info(`Unidad funcional con ID ${req.params.id} recuperada correctamente.`)
 		res.status(200).json(functionalUnit)
 	} catch (error) {
-		res.status(500).json({ message: 'Error retrieving functional unit', error })
+		logger.error(`Error al recuperar la unidad funcional con ID ${req.params.id}: ${error.message}`)
+		res.status(500).json({ message: 'Error al recuperar la unidad funcional', error })
 	}
 }
 
 // Update a Functional Unit by ID
 exports.updateFunctionalUnit = async (req, res) => {
 	try {
+		logger.info(`Solicitud recibida para actualizar la unidad funcional con ID ${req.params.id}.`)
+
 		const { name, type, occupied, tenantUserId, ownerUserId } = req.body
 
 		const functionalUnit = await FunctionalUnit.findById(req.params.id)
 		if (!functionalUnit) {
-			return res.status(404).json({ message: 'Functional unit not found' })
+			logger.warn(
+				`Intento de actualización fallido: Unidad funcional con ID ${req.params.id} no encontrada.`
+			)
+			return res.status(404).json({ message: 'La unidad funcional no fue encontrada' })
 		}
 
-		// Update details
+		logger.info(
+			`Actualizando unidad funcional con ID ${req.params.id}. Datos recibidos: ${JSON.stringify(
+				req.body
+			)}`
+		)
+
 		if (name) functionalUnit.name = name
 		if (type) functionalUnit.type = type
 		if (occupied !== undefined) functionalUnit.occupied = occupied
@@ -122,23 +158,36 @@ exports.updateFunctionalUnit = async (req, res) => {
 		}
 
 		await functionalUnit.save()
+
+		logger.info(`Unidad funcional con ID ${req.params.id} actualizada con éxito.`)
 		res.status(200).json(functionalUnit)
 	} catch (error) {
-		res.status(500).json({ message: 'Error updating functional unit', error })
+		logger.error(
+			`Error al actualizar la unidad funcional con ID ${req.params.id}: ${error.message}`
+		)
+		res.status(500).json({ message: 'Error al actualizar la unidad funcional', error })
 	}
 }
 
 // Delete a Functional Unit by ID
 exports.deleteFunctionalUnit = async (req, res) => {
 	try {
+		logger.info(`Solicitud recibida para eliminar la unidad funcional con ID ${req.params.id}.`)
+
 		const functionalUnit = await FunctionalUnit.findById(req.params.id)
 		if (!functionalUnit) {
-			return res.status(404).json({ message: 'Functional unit not found' })
+			logger.warn(
+				`Intento de eliminación fallido: Unidad funcional con ID ${req.params.id} no encontrada.`
+			)
+			return res.status(404).json({ message: 'La unidad funcional no fue encontrada' })
 		}
 
 		await functionalUnit.deleteOne()
-		res.status(200).json({ message: 'Functional unit deleted successfully' })
+
+		logger.info(`Unidad funcional con ID ${req.params.id} eliminada correctamente.`)
+		res.status(200).json({ message: 'La unidad funcional fue eliminada con éxito' })
 	} catch (error) {
-		res.status(500).json({ message: 'Error deleting functional unit', error })
+		logger.error(`Error al eliminar la unidad funcional con ID ${req.params.id}: ${error.message}`)
+		res.status(500).json({ message: 'Error al eliminar la unidad funcional', error })
 	}
 }

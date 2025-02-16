@@ -1,23 +1,32 @@
 const { uploadToCloudinary, deleteFromCloudinary } = require('./cloudinary.controller')
+const logger = require('../utils/logger')
 
+// Upload file to hosting
 exports.uploadFileToHosting = async (file, type) => {
 	try {
+		logger.info(`Solicitud recibida para subir un archivo de tipo ${type}.`)
+
 		const result = await uploadToCloudinary(file, type)
-		console.log('File uploaded:', result)
+
+		logger.info(`Archivo subido con éxito. URL: ${result.url}`)
 		return result
 	} catch (error) {
-		console.error('Error uploading file:', error)
-		throw new Error('Failed to upload file to hosting')
+		logger.error(`Error al subir el archivo: ${error.message}`)
+		throw new Error('Error al subir el archivo al hosting')
 	}
 }
 
+// Delete file from hosting
 exports.deleteFileFromHosting = (document) => {
 	try {
+		logger.info(`Solicitud recibida para eliminar un archivo con URL: ${document}.`)
+
 		const result = deleteFromCloudinary(document)
-		console.log('File deleted')
+
+		logger.info('Archivo eliminado con éxito.')
 		return result
 	} catch (error) {
-		console.error('Error deleting file:', error)
-		throw new Error('Failed to delete file from hosting')
+		logger.error(`Error al eliminar el archivo: ${error.message}`)
+		throw new Error('Error al eliminar el archivo del hosting')
 	}
 }
