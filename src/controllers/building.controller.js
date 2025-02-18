@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
 const crypto = require('crypto')
+const logger = require('../utils/logger')
 const Building = require('../models/Building')
 const Administration = require('../models/Administration')
 const FunctionalUnit = require('../models/FunctionalUnit')
@@ -7,8 +8,8 @@ const Plan = require('../models/Plan')
 const Tower = require('../models/Tower')
 const User = require('../models/User')
 const { hashPassword } = require('../utils/hashPassword')
-const { welcomeMail } = require('../utils/templates/welcomeMail')
 const sendEmail = require('../utils/sendEmail')
+const { welcomeMail } = require('../utils/templates/welcomeMail')
 const {
 	administrationNotificationMail
 } = require('../utils/templates/administrationNotificationMail')
@@ -18,19 +19,25 @@ exports.createFullBuilding = async (req, res) => {
 	try {
 		const { administrationId, ownerUserId, street, number, towers, plan, ufLength } = req.body
 
+		logger.info('Solicitud recibida para crear un edificio completo.')
+
 		// Verify if the administration exists
 		const administration = await Administration.findById(administrationId)
 		if (!administration) {
+			logger.warn(
+				`Intento de creación fallido: Administración con ID ${administrationId} no encontrada.`
+			)
 			return res
 				.status(400)
-				.json({ message: 'Invalid administrationId. Administration does not exist.' })
+				.json({ message: 'ID de administración inválido. La administración no existe.' })
 		}
 
 		// Verify if the ownerUserId is valid
 		const ownerUser = await User.findById(ownerUserId)
 		if (!ownerUser || !['SUPERUSER', 'ADMINISTRATION', 'OWNER'].includes(ownerUser.type)) {
+			logger.warn(`Intento de creación fallido: Usuario con ID ${ownerUserId} no válido.`)
 			return res.status(400).json({
-				message: 'Invalid ownerUserId. Must be a SUPERUSER, ADMINISTRATION, or OWNER.'
+				message: 'ID de usuario propietario inválido. Debe ser SUPERUSER, ADMINISTRATION o OWNER.'
 			})
 		}
 
@@ -57,7 +64,8 @@ exports.createFullBuilding = async (req, res) => {
 		})
 		await newBuilding.save()
 
-		// Object to store the result details
+		logger.info(`Edificio creado con éxito. ID: ${newBuilding._id}, Friendly ID: ${friendlyId}`)
+
 		const buildingDetails = {
 			id: newBuilding._id,
 			friendlyId: newBuilding.friendlyId,
@@ -70,7 +78,6 @@ exports.createFullBuilding = async (req, res) => {
 		for (const towerData of towers) {
 			const { towerName, floors, hasPremise, premise, groundFloor } = towerData
 
-			// Create the tower
 			const newTower = new Tower({
 				name: towerName,
 				buildingId: newBuilding._id,
@@ -89,10 +96,13 @@ exports.createFullBuilding = async (req, res) => {
 				functionalUnits: []
 			}
 
+			logger.info(
+				`Torre creada con éxito. ID: ${newTower._id}, Friendly ID: ${newTower.friendlyId}`
+			)
+
 			// Create functional units for premises (if any)
 			if (hasPremise && premise) {
 				for (const ufData of Object.values(premise)) {
-					// Only create a user if an email is provided
 					if (ufData.mail) {
 						const newUser = await createUserForFunctionalUnit(
 							ufData,
@@ -114,6 +124,9 @@ exports.createFullBuilding = async (req, res) => {
 							ownerUser: newUser._id,
 							userEmail: newUser.email
 						})
+						logger.info(
+							`Unidad funcional creada con éxito en torre ID ${newTower._id}, ID: ${newFunctionalUnit._id}`
+						)
 					}
 				}
 			}
@@ -121,7 +134,6 @@ exports.createFullBuilding = async (req, res) => {
 			// Create functional units for the ground floor
 			if (groundFloor) {
 				for (const ufData of Object.values(groundFloor)) {
-					// Only create a user if an email is provided
 					if (ufData.mail) {
 						const newUser = await createUserForFunctionalUnit(
 							ufData,
@@ -143,6 +155,9 @@ exports.createFullBuilding = async (req, res) => {
 							ownerUser: newUser._id,
 							userEmail: newUser.email
 						})
+						logger.info(
+							`Unidad funcional creada con éxito en torre ID ${newTower._id}, ID: ${newFunctionalUnit._id}`
+						)
 					}
 				}
 			}
@@ -153,7 +168,6 @@ exports.createFullBuilding = async (req, res) => {
 				const floorData = towerData[floorKey]
 				if (floorData) {
 					for (const ufData of Object.values(floorData)) {
-						// Only create a user if an email is provided
 						if (ufData.mail) {
 							const newUser = await createUserForFunctionalUnit(
 								ufData,
@@ -175,6 +189,9 @@ exports.createFullBuilding = async (req, res) => {
 								ownerUser: newUser._id,
 								userEmail: newUser.email
 							})
+							logger.info(
+								`Unidad funcional creada con éxito en torre ID ${newTower._id}, ID: ${newFunctionalUnit._id}`
+							)
 						}
 					}
 				}
@@ -183,8 +200,6 @@ exports.createFullBuilding = async (req, res) => {
 			// Save the tower with its functional units
 			await newTower.save()
 			newBuilding.towersData.push(newTower._id)
-
-			// Add tower details to the building
 			buildingDetails.towers.push(towerDetails)
 		}
 
@@ -200,9 +215,11 @@ exports.createFullBuilding = async (req, res) => {
 		const htmlContent = administrationNotificationMail(administration.name, street, number)
 		await sendEmail(ownerUser.email, subject, htmlContent)
 
+		logger.info(`Edificio completo creado con éxito. ID: ${newBuilding._id}`)
+
 		// Return the result with all created entities
 		res.status(201).json({
-			message: 'Building, towers, and functional units created successfully.',
+			message: 'Edificio, torres y unidades funcionales creados con éxito.',
 			data: {
 				...buildingDetails,
 				plan: {
@@ -215,8 +232,8 @@ exports.createFullBuilding = async (req, res) => {
 			}
 		})
 	} catch (error) {
-		console.error(error)
-		res.status(500).json({ message: 'Error creating full building', error: error.message })
+		logger.error(`Error al crear el edificio completo: ${error.message}`)
+		res.status(500).json({ message: 'Error al crear el edificio completo', error: error.message })
 	}
 }
 
@@ -233,8 +250,10 @@ const createUserForFunctionalUnit = async (
 	// Check if the user already exists
 	let user = await User.findOne({ email: mail })
 	if (!user) {
+		// Generar una contraseña aleatoria para el usuario
 		const password = crypto.randomBytes(8).toString('hex')
 		const hashedPassword = await hashPassword(password)
+		const resetToken = crypto.randomBytes(32).toString('hex')
 
 		user = new User({
 			username: fullName,
@@ -242,14 +261,15 @@ const createUserForFunctionalUnit = async (
 			email: mail,
 			password: hashedPassword,
 			cellularNumber: cellularNumber || '',
-			type: ufData.type, // 'OWNER' or 'TENANT'
+			type: ufData.type, // 'OWNER' o 'TENANT'
 			streetName: streetAddress,
-			streetNumber: numberAddress
+			streetNumber: numberAddress,
+			resetPasswordToken: resetToken
 		})
 
 		await user.save()
 
-		// Send an email with the user's credentials
+		// Enviar email con la contraseña generada (no el enlace de reset)
 		const subject = 'Bienvenido a la plataforma - Tus credenciales'
 		const htmlContent = welcomeMail(
 			adminName,
@@ -259,8 +279,10 @@ const createUserForFunctionalUnit = async (
 			streetAddress,
 			numberAddress
 		)
+
 		await sendEmail(mail, subject, htmlContent)
 	}
+
 	return user
 }
 
@@ -284,17 +306,23 @@ exports.createBuilding = async (req, res) => {
 	try {
 		const { administrationId, planId, streetName, streetNumber, towers } = req.body
 
+		logger.info('Solicitud recibida para crear un edificio.')
+
 		// Check if the administration and plan exist
 		const administration = await Administration.findById(administrationId)
 		if (!administration) {
+			logger.warn(
+				`Intento de creación fallido: Administración con ID ${administrationId} no encontrada.`
+			)
 			return res
 				.status(400)
-				.json({ message: 'Invalid administrationId. Administration does not exist.' })
+				.json({ message: 'ID de administración inválido. La administración no existe.' })
 		}
 
 		const planExists = await Plan.findById(planId)
 		if (!planExists) {
-			return res.status(400).json({ message: 'Invalid planId. Plan does not exist.' })
+			logger.warn(`Intento de creación fallido: Plan con ID ${planId} no encontrado.`)
+			return res.status(400).json({ message: 'ID de plan inválido. El plan no existe.' })
 		}
 
 		// Generate a friendlyId for the building
@@ -314,12 +342,13 @@ exports.createBuilding = async (req, res) => {
 		// Save the building
 		await newBuilding.save()
 
+		logger.info(`Edificio creado con éxito. ID: ${newBuilding._id}, Friendly ID: ${friendlyId}`)
+
 		// If there are towers provided, create them
 		if (towers && towers.length > 0) {
 			const towerIds = []
 
 			for (const towerData of towers) {
-				// Generate a friendlyId for the tower based on the building's friendlyId
 				const towerFriendlyId = `${newBuilding.friendlyId}-${uuidv4().slice(-4)}`
 
 				const tower = new Tower({
@@ -331,6 +360,8 @@ exports.createBuilding = async (req, res) => {
 
 				await tower.save()
 				towerIds.push(tower._id)
+
+				logger.info(`Torre creada con éxito. ID: ${tower._id}, Friendly ID: ${towerFriendlyId}`)
 			}
 
 			// Update building with towerIds
@@ -340,13 +371,16 @@ exports.createBuilding = async (req, res) => {
 
 		res.status(201).json(newBuilding)
 	} catch (error) {
-		res.status(500).json({ message: 'Error creating building', error })
+		logger.error(`Error al crear el edificio: ${error.message}`)
+		res.status(500).json({ message: 'Error al crear el edificio', error })
 	}
 }
 
 // Get all Buildings
 exports.getAllBuildings = async (req, res) => {
 	try {
+		logger.info('Solicitud recibida para obtener todos los edificios.')
+
 		const buildings = await Building.find()
 			.populate('administrationId')
 			.populate('planId')
@@ -356,15 +390,20 @@ exports.getAllBuildings = async (req, res) => {
 					path: 'functionalUnitsData'
 				}
 			})
+
+		logger.info(`Se recuperaron ${buildings.length} edificios.`)
 		res.status(200).json(buildings)
 	} catch (error) {
-		res.status(500).json({ message: 'Error retrieving buildings', error: error.message })
+		logger.error(`Error al recuperar los edificios: ${error.message}`)
+		res.status(500).json({ message: 'Error al recuperar los edificios', error: error.message })
 	}
 }
 
 // Get a Building by ID
 exports.getBuildingById = async (req, res) => {
 	try {
+		logger.info(`Solicitud recibida para obtener el edificio con ID ${req.params.id}.`)
+
 		const building = await Building.findById(req.params.id)
 			.populate('administrationId')
 			.populate('planId')
@@ -374,23 +413,35 @@ exports.getBuildingById = async (req, res) => {
 					path: 'functionalUnitsData'
 				}
 			})
+
 		if (!building) {
-			return res.status(404).json({ message: 'Building not found' })
+			logger.warn(
+				`Intento de obtener edificio fallido: Edificio con ID ${req.params.id} no encontrado.`
+			)
+			return res.status(404).json({ message: 'El edificio no fue encontrado' })
 		}
+
+		logger.info(`Edificio con ID ${req.params.id} recuperado correctamente.`)
 		res.status(200).json(building)
 	} catch (error) {
-		res.status(500).json({ message: 'Error retrieving building', error })
+		logger.error(`Error al recuperar el edificio con ID ${req.params.id}: ${error.message}`)
+		res.status(500).json({ message: 'Error al recuperar el edificio', error })
 	}
 }
 
 // Update a Building by ID
 exports.updateBuilding = async (req, res) => {
 	try {
+		logger.info(`Solicitud recibida para actualizar el edificio con ID ${req.params.id}.`)
+
 		const { streetName, streetNumber, planId, administrationId, towersToRemove } = req.body
 
 		const building = await Building.findById(req.params.id)
 		if (!building) {
-			return res.status(404).json({ message: 'Building not found' })
+			logger.warn(
+				`Intento de actualización fallido: Edificio con ID ${req.params.id} no encontrado.`
+			)
+			return res.status(404).json({ message: 'El edificio no fue encontrado' })
 		}
 
 		// Check if the administration exists
@@ -398,9 +449,12 @@ exports.updateBuilding = async (req, res) => {
 			administrationId || building.administrationId
 		)
 		if (!administration) {
+			logger.warn(
+				`Intento de actualización fallido: Administración con ID ${administrationId} no encontrada.`
+			)
 			return res
 				.status(400)
-				.json({ message: 'Invalid administrationId. Administration does not exist.' })
+				.json({ message: 'ID de administración inválido. La administración no existe.' })
 		}
 
 		// Update fields and regenerate friendlyId if streetName is updated
@@ -415,37 +469,46 @@ exports.updateBuilding = async (req, res) => {
 		if (planId) {
 			const planExists = await Plan.findById(planId)
 			if (!planExists) {
-				return res.status(400).json({ message: 'Invalid planId. Plan does not exist.' })
+				logger.warn(`Intento de actualización fallido: Plan con ID ${planId} no encontrado.`)
+				return res.status(400).json({ message: 'ID de plan inválido. El plan no existe.' })
 			}
 			building.planId = planId
 		}
 
 		// Remove specific towers if towersToRemove is provided
 		if (towersToRemove && towersToRemove.length > 0) {
-			// Filter out the towers that need to be removed
 			building.towersData = building.towersData.filter(
 				(towerId) => !towersToRemove.includes(towerId.toString())
 			)
 		}
 
 		await building.save()
+
+		logger.info(`Edificio con ID ${req.params.id} actualizado con éxito.`)
 		res.status(200).json(building)
 	} catch (error) {
-		res.status(500).json({ message: 'Error updating building', error })
+		logger.error(`Error al actualizar el edificio con ID ${req.params.id}: ${error.message}`)
+		res.status(500).json({ message: 'Error al actualizar el edificio', error })
 	}
 }
 
 // Delete a Building by ID
 exports.deleteBuilding = async (req, res) => {
 	try {
+		logger.info(`Solicitud recibida para eliminar el edificio con ID ${req.params.id}.`)
+
 		const building = await Building.findById(req.params.id)
 		if (!building) {
-			return res.status(404).json({ message: 'Building not found' })
+			logger.warn(`Intento de eliminación fallido: Edificio con ID ${req.params.id} no encontrado.`)
+			return res.status(404).json({ message: 'El edificio no fue encontrado' })
 		}
 
 		await building.deleteOne()
-		res.status(200).json({ message: 'Building deleted successfully' })
+
+		logger.info(`Edificio con ID ${req.params.id} eliminado correctamente.`)
+		res.status(200).json({ message: 'El edificio fue eliminado con éxito' })
 	} catch (error) {
-		res.status(500).json({ message: 'Error deleting building', error })
+		logger.error(`Error al eliminar el edificio con ID ${req.params.id}: ${error.message}`)
+		res.status(500).json({ message: 'Error al eliminar el edificio', error })
 	}
 }

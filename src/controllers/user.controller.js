@@ -8,6 +8,8 @@ const { hashPassword } = require('../utils/hashPassword')
 const sendEmail = require('../utils/sendEmail')
 const { activationMail } = require('../utils/templates/activationMail')
 const { isEmptyOrNull } = require('../utils/utils')
+const { passwordResetSuccessMail } = require('../utils/templates/passwordResetSuccessMail')
+const logger = require('../utils/logger')
 
 // Helper function to generate access and refresh tokens
 const generateTokens = (userId, type) => {
@@ -22,17 +24,18 @@ const generateTokens = (userId, type) => {
 exports.getUserById = async (req, res) => {
 	try {
 		const userId = req.params.id
-
-		// Find the user by ID
 		const user = await User.findById(userId).select('-password')
 
 		if (!user) {
-			return res.status(404).json({ message: 'User not found' })
+			logger.warn(`Usuario con ID ${userId} no encontrado.`)
+			return res.status(404).json({ message: 'Usuario no encontrado' })
 		}
 
+		logger.info(`Usuario con ID ${userId} recuperado correctamente.`)
 		res.status(200).json(user)
 	} catch (error) {
-		res.status(500).json({ message: 'Error retrieving user', error })
+		logger.error(`Error al recuperar usuario ID ${req.params.id}: ${error.message}`)
+		res.status(500).json({ message: 'Error al recuperar el usuario', error: error.message })
 	}
 }
 
@@ -41,60 +44,45 @@ exports.register = async (req, res) => {
 	const { username, email, password, cellularNumber, type } = req.body
 
 	try {
-		// Verify if the user already exists
 		let user = await User.findOne({ email })
-		let newAdministration = {}
 		if (user) {
-			return res.status(400).json({ message: 'Email is already registered.' })
+			logger.warn(`Intento de registro con email ya existente: ${email}`)
+			return res.status(400).json({ message: 'El correo electrónico ya está registrado.' })
 		}
 
-		// Hash the password
 		const hashedPassword = await hashPassword(password)
-
-		// Create a new user
 		user = new User({
 			username,
 			email,
 			password: hashedPassword,
+			resetPasswordToken: crypto.randomBytes(32).toString('hex'),
 			cellularNumber,
 			type,
 			isActive: false
 		})
-
 		await user.save()
 
-		// Check if the user type is 'ADMINISTRATION' to create a corresponding administration
+		let newAdministration = {}
 		if (type === 'ADMINISTRATION' || type === 'SUPERUSER') {
 			const friendlyId = `${user._id.toString().slice(-4)}`
-
-			// Create the administration
 			newAdministration = new Administration({
 				name: username,
 				ownerId: user._id,
 				friendlyId,
 				buildings: []
 			})
-
 			await newAdministration.save()
 		}
 
-		// Send activation email with a link to the frontend activation page
 		const activationLink = `${process.env.CABILDO_FRONT_URL}/activate-account/${user._id}`
 		const emailContent = activationMail(username, activationLink)
 		await sendEmail(user.email, 'Confirma tu cuenta en Cabildo', emailContent)
 
-		// Generate tokens
-		const { accessToken, refreshToken } = generateTokens(user._id, user.type)
-
-		const response = { accessToken, refreshToken, userId: user._id }
-
-		if (type === 'ADMINISTRATION' || type === 'SUPERUSER')
-			response.administrationId = newAdministration._id
-
-		res.status(201).json(response)
+		logger.info(`Usuario registrado correctamente: ${email}`)
+		res.status(201).json({ userId: user._id, administrationId: newAdministration._id })
 	} catch (error) {
-		console.log({ error })
-		res.status(500).json({ message: 'Error registering user. ' + error.message })
+		logger.error(`Error al registrar usuario (${email}): ${error.message}`)
+		res.status(500).json({ message: 'Error al registrar usuario.', error: error.message })
 	}
 }
 
@@ -103,16 +91,22 @@ exports.login = async (req, res) => {
 	const { email, password } = req.body
 
 	try {
+		logger.info(`Solicitud de inicio de sesión para el correo: ${email}`)
+
 		// Verify if the user exists
 		const user = await User.findOne({ email })
 		if (!user || !user.isActive) {
-			return res.status(400).json({ message: 'Invalid credentials or inactive user.' })
+			logger.warn(
+				`Intento de inicio de sesión fallido para ${email}: Usuario no encontrado o inactivo.`
+			)
+			return res.status(400).json({ message: 'Credenciales inválidas o usuario inactivo.' })
 		}
 
 		// Compare the password
 		const isMatch = await bcrypt.compare(password, user.password)
 		if (!isMatch) {
-			return res.status(400).json({ message: 'Invalid credentials.' })
+			logger.warn(`Intento de inicio de sesión fallido para ${email}: Contraseña incorrecta.`)
+			return res.status(400).json({ message: 'Credenciales inválidas.' })
 		}
 
 		// Generate tokens
@@ -121,19 +115,23 @@ exports.login = async (req, res) => {
 		// Prepare the response object
 		const response = { accessToken, refreshToken, userId: user._id }
 
-		// If the user type is 'ADMINISTRATION', retrieve the corresponding administration
+		// If the user type is 'ADMINISTRATION' or 'SUPERUSER', retrieve the corresponding administration
 		if (user.type === 'ADMINISTRATION' || user.type === 'SUPERUSER') {
 			const administration = await Administration.findOne({ ownerId: user._id })
 
 			if (administration) {
 				response.administrationId = administration._id
+				logger.info(
+					`Usuario ${email} es ADMINISTRATION. ID de administración: ${administration._id}`
+				)
 			}
 		}
 
-		// Send the response
+		logger.info(`Inicio de sesión exitoso para ${email}.`)
 		res.status(200).json(response)
 	} catch (error) {
-		res.status(500).json({ message: 'Error logging in.', error })
+		logger.error(`Error en el inicio de sesión para ${email}: ${error.message}`)
+		res.status(500).json({ message: 'Error al iniciar sesión.', error: error.message })
 	}
 }
 
@@ -142,7 +140,7 @@ exports.refreshToken = (req, res) => {
 	const { refreshToken } = req.body
 
 	if (!refreshToken) {
-		return res.status(401).json({ message: 'Refresh token is required.' })
+		return res.status(401).json({ message: 'Se requiere un token de actualización.' })
 	}
 
 	try {
@@ -158,7 +156,9 @@ exports.refreshToken = (req, res) => {
 
 		res.status(200).json({ accessToken })
 	} catch (error) {
-		return res.status(403).json({ message: 'Invalid refresh token.' })
+		return res
+			.status(403)
+			.json({ message: 'Token de actualización inválido.', error: error.message })
 	}
 }
 
@@ -167,32 +167,30 @@ exports.forgotPassword = async (req, res) => {
 	const { email } = req.body
 
 	try {
-		// Verify if the user exists
 		const user = await User.findOne({ email })
 		if (!user) {
-			return res.status(404).json({ message: 'User with this email does not exist.' })
+			logger.warn(`Intento de recuperación de contraseña fallido: Usuario no encontrado (${email})`)
+			return res.status(404).json({ message: 'No existe un usuario con este correo electrónico.' })
 		}
 
-		// Generate a reset token
 		const resetToken = crypto.randomBytes(32).toString('hex')
-		const resetTokenExpiry = Date.now() + 3600000 // 1 hour expiration
-
-		// Save the reset token and its expiration to the user
 		user.resetPasswordToken = resetToken
-		user.resetPasswordExpires = resetTokenExpiry
+		user.resetPasswordExpires = Date.now() + 3600000
 		await user.save()
 
-		// Create a reset URL
 		const resetUrl = `${process.env.CABILDO_FRONT_URL}/reset-password/${resetToken}`
-
 		const subject = 'Solicitud de restablecimiento de contraseña'
 		const htmlContent = recoveryMail(resetUrl, user.username)
 
 		await sendEmail(user.email, subject, htmlContent)
-
-		res.status(200).json({ message: 'Password reset email sent.' })
+		logger.info(`Correo de recuperación de contraseña enviado a ${email}`)
+		res.status(200).json({ message: 'Correo de restablecimiento de contraseña enviado.' })
 	} catch (error) {
-		res.status(500).json({ message: 'Error sending password reset email.', error })
+		logger.error(`Error en forgotPassword para ${email}: ${error.message}`)
+		res.status(500).json({
+			message: 'Error al enviar el correo de restablecimiento de contraseña.',
+			error: error.message
+		})
 	}
 }
 
@@ -208,44 +206,60 @@ exports.verifyResetToken = async (req, res) => {
 		})
 
 		if (!user) {
-			return res.status(400).json({ message: 'Invalid or expired token.' })
+			return res.status(400).json({ message: 'Token inválido o expirado.' })
 		}
 
-		res.status(200).json({ message: 'Valid token', token })
+		res.status(200).json({ message: 'Token válido', token })
 	} catch (error) {
-		res.status(500).json({ message: 'Error validating reset token.', error })
+		res.status(500).json({ message: 'Error validando token de reseteo.', error: error.message })
 	}
 }
 
 // Reset password
 exports.resetPassword = async (req, res) => {
 	const { token } = req.params
-	const { newPassword } = req.body
+	const { id, newPassword, oldPassword } = req.body
 
 	try {
-		// Find the user with the reset token and check if it's still valid
-		const user = await User.findOne({
-			resetPasswordToken: token,
-			resetPasswordExpires: { $gt: Date.now() } // Token is valid if it's still within the expiration time
-		})
+		let user = null
 
-		if (!user) {
-			return res.status(400).json({ message: 'Invalid or expired token.' })
+		if (token && token !== 'undefined') {
+			user = await User.findOne({ resetPasswordToken: token })
+		} else if (id) {
+			user = await User.findById(id)
 		}
 
-		// Hash the new password
-		const salt = await bcrypt.genSalt(10)
-		const hashedPassword = await bcrypt.hash(newPassword, salt)
+		if (!user) {
+			logger.warn(`Intento de reset de contraseña fallido: Usuario no encontrado o token inválido`)
+			return res.status(400).json({ message: 'Usuario no encontrado o token inválido.' })
+		}
 
-		// Update the user's password and remove the reset token
+		if (!token && oldPassword) {
+			const isMatch = await bcrypt.compare(oldPassword, user.password)
+			if (!isMatch) {
+				logger.warn(`Intento de reset fallido: Old password incorrecta para usuario ID ${id}`)
+				return res.status(400).json({ message: 'La contraseña antigua es incorrecta.' })
+			}
+		} else if (!token && !oldPassword) {
+			return res
+				.status(400)
+				.json({ message: 'Se requiere un token de reseteo o la contraseña actual.' })
+		}
+
+		const hashedPassword = await bcrypt.hash(newPassword, 10)
 		user.password = hashedPassword
-		user.resetPasswordToken = undefined
-		user.resetPasswordExpires = undefined
+		if (token) user.resetPasswordToken = undefined
 		await user.save()
 
-		res.status(200).json({ message: 'Password reset successfully.' })
+		const subject = 'Tu contraseña ha sido actualizada con éxito'
+		const htmlContent = passwordResetSuccessMail(user.username)
+		await sendEmail(user.email, subject, htmlContent)
+
+		logger.info(`Contraseña restablecida con éxito para el usuario ${user.email}`)
+		res.status(200).json({ message: 'Contraseña restablecida con éxito.' })
 	} catch (error) {
-		res.status(500).json({ message: 'Error resetting password.', error })
+		logger.error(`Error en resetPassword para usuario ID ${id || 'N/A'}: ${error.message}`)
+		res.status(500).json({ message: 'Error al restablecer la contraseña.', error: error.message })
 	}
 }
 
@@ -254,18 +268,20 @@ exports.deactivateUser = async (req, res) => {
 	const { userId } = req.params
 
 	try {
-		// Find the user by ID and set isActive to false
 		const user = await User.findByIdAndUpdate(userId, { isActive: false }, { new: true }).select(
 			'-password'
 		)
 
 		if (!user) {
-			return res.status(404).json({ message: 'User not found' })
+			logger.warn(`Intento de desactivación fallido: Usuario con ID ${userId} no encontrado.`)
+			return res.status(404).json({ message: 'Usuario no encontrado' })
 		}
 
-		res.status(200).json({ message: 'User deactivated successfully', user })
+		logger.info(`Usuario con ID ${userId} desactivado correctamente.`)
+		res.status(200).json({ message: 'Usuario desactivado con éxito', user })
 	} catch (error) {
-		res.status(500).json({ message: 'Error deactivating user', error })
+		logger.error(`Error al desactivar usuario ID ${userId}: ${error.message}`)
+		res.status(500).json({ message: 'Error al desactivar usuario', error: error.message })
 	}
 }
 
@@ -274,21 +290,22 @@ exports.reactivateUser = async (req, res) => {
 	const { userId } = req.params
 
 	try {
-		// Find the user by ID and set isActive to true
 		const user = await User.findByIdAndUpdate(userId, { isActive: true }, { new: true }).select(
 			'-password'
 		)
 
 		if (!user) {
-			return res.status(404).json({ message: 'User not found' })
+			logger.warn(`Intento de reactivación fallido: Usuario con ID ${userId} no encontrado.`)
+			return res.status(404).json({ message: 'Usuario no encontrado' })
 		}
 
-		res.status(200).json({ message: 'User reactivated successfully', user })
+		logger.info(`Usuario con ID ${userId} reactivado correctamente.`)
+		res.status(200).json({ message: 'Usuario reactivado con éxito', user })
 	} catch (error) {
-		res.status(500).json({ message: 'Error reactivating user', error })
+		logger.error(`Error al reactivar usuario ID ${userId}: ${error.message}`)
+		res.status(500).json({ message: 'Error al reactivar usuario', error: error.message })
 	}
 }
-
 
 exports.editUser = async (req, res) => {
 	const { userId } = req.params
@@ -298,13 +315,15 @@ exports.editUser = async (req, res) => {
 		const user = await User.findById(userId)
 
 		if (!user) {
-			return res.status(404).json({ message: 'User not found' })
+			logger.warn(`Intento de edición fallido: Usuario con ID ${userId} no encontrado.`)
+			return res.status(404).json({ message: 'Usuario no encontrado' })
 		}
 
 		// Compare the password
 		const isMatch = await bcrypt.compare(oldPassword, user.password)
 		if (!isMatch) {
-			return res.status(400).json({ message: 'Invalid credentials.' })
+			logger.warn(`Intento de edición fallido: Contraseña incorrecta para usuario ID ${userId}`)
+			return res.status(400).json({ message: 'Credenciales inválidas.' })
 		}
 
 		if (!isEmptyOrNull(newPassword)) {
@@ -327,9 +346,10 @@ exports.editUser = async (req, res) => {
 
 		await user.save()
 
-		res.status(200).json({ message: 'User edited successfully', user })
+		logger.info(`Usuario con ID ${userId} editado con éxito.`)
+		res.status(200).json({ message: 'Usuario editado con éxito', user })
 	} catch (error) {
-		console.log(error)
-		res.status(500).json({ message: 'Error editing user', error })
+		logger.error(`Error al editar usuario ID ${userId}: ${error.message}`)
+		res.status(500).json({ message: 'Error al editar usuario', error: error.message })
 	}
 }

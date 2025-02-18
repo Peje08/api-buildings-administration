@@ -1,4 +1,5 @@
 const cloudinary = require('cloudinary').v2
+const logger = require('../utils/logger')
 require('dotenv').config()
 
 const fs = require('fs')
@@ -34,30 +35,52 @@ cloudinary.config({
 
 exports.uploadToCloudinary = async (filePath, type) => {
 	if (!filePath) {
-		console.error('Missing file path')
-		throw new Error('File path is required')
+		logger.warn('Falta la ruta del archivo en la subida a Cloudinary.')
+		throw new Error('Se requiere la ruta del archivo.')
 	}
+
+	logger.info(`Subiendo archivo a Cloudinary. Tipo: ${type}, Ruta: ${filePath}`)
+
 	const resourceType = getResourceType(filePath)
 	const folder = folderMapping[type] || 'Cabildo/otros'
 
 	const timestamp = Date.now()
 	const publicId = `${type.toLowerCase()}-${timestamp}`
 
-	const result = await cloudinary.uploader.upload(filePath, {
-		...resourceType,
-		folder,
-		public_id: publicId
-	})
-	await unlinkFile(filePath)
-	return result
+	try {
+		const result = await cloudinary.uploader.upload(filePath, {
+			...resourceType,
+			folder,
+			public_id: publicId
+		})
+
+		await unlinkFile(filePath)
+
+		logger.info(`Archivo subido con éxito a Cloudinary. Public ID: ${result.public_id}`)
+		return result
+	} catch (error) {
+		logger.error(`Error al subir el archivo a Cloudinary: ${error.message}`)
+		throw new Error('Error al subir el archivo a Cloudinary.')
+	}
 }
 
 exports.deleteFromCloudinary = async (fileId) => {
 	if (!fileId) {
-		console.error('missing file id')
+		logger.warn('Falta el ID del archivo en la eliminación de Cloudinary.')
 		return
 	}
+
+	logger.info(`Eliminando archivo de Cloudinary. File ID: ${fileId}`)
+
 	const resourceType = getResourceType(fileId)
-	const result = await cloudinary.uploader.destroy(fileId, resourceType)
-	return result
+
+	try {
+		const result = await cloudinary.uploader.destroy(fileId, resourceType)
+
+		logger.info(`Archivo con ID ${fileId} eliminado de Cloudinary.`)
+		return result
+	} catch (error) {
+		logger.error(`Error al eliminar el archivo de Cloudinary: ${error.message}`)
+		throw new Error('Error al eliminar el archivo de Cloudinary.')
+	}
 }
