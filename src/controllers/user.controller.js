@@ -309,7 +309,7 @@ exports.reactivateUser = async (req, res) => {
 
 exports.editUser = async (req, res) => {
 	const { userId } = req.params
-	const { username, oldPassword, newPassword, cellularNumber } = req.body
+	const { username, oldPassword, newPassword, cellularNumber, firstTime } = req.body
 
 	try {
 		const user = await User.findById(userId)
@@ -339,7 +339,11 @@ exports.editUser = async (req, res) => {
 		if (!isEmptyOrNull(cellularNumber)) {
 			user.cellularNumber = cellularNumber
 		}
-		user.firstTime = false
+
+		if (!isEmptyOrNull(firstTime)) {
+			user.firstTime = firstTime
+		}
+
 		await user.save()
 
 		logger.info(`Usuario con ID ${userId} editado con éxito.`)
