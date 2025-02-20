@@ -28,10 +28,6 @@ const logger = createLogger({
 					return `[${level}]: ${message}`
 				})
 			)
-		}),
-		new transports.File({
-			filename: 'app.log',
-			format: format.combine(format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), format.json())
 		})
 	]
 })

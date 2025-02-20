@@ -234,7 +234,7 @@ exports.resetPassword = async (req, res) => {
 			return res.status(400).json({ message: 'Usuario no encontrado o token inválido.' })
 		}
 
-		if (!token && oldPassword) {
+		if ((!token || token === 'undefined') && oldPassword) {
 			const isMatch = await bcrypt.compare(oldPassword, user.password)
 			if (!isMatch) {
 				logger.warn(`Intento de reset fallido: Old password incorrecta para usuario ID ${id}`)
