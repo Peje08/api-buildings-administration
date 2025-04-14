@@ -42,7 +42,7 @@ const UserSchema = new mongoose.Schema(
 		},
 		firstTime: {
 			type: Boolean,
-			default: true
+			default: false
 		}
 
 	},
