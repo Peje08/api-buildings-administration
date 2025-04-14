@@ -60,6 +60,11 @@ exports.register = async (req, res) => {
 			type,
 			isActive: false
 		})
+
+		if (type !== 'ADMINISTRATION' && type !== 'SUPERUSER') {
+			user.firstTime = true;
+		}
+
 		await user.save()
 
 		let newAdministration = {}
