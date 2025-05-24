@@ -62,7 +62,7 @@ exports.register = async (req, res) => {
 		})
 
 		if (type !== 'ADMINISTRATION' && type !== 'SUPERUSER') {
-			user.firstTime = true;
+			user.firstTime = true
 		}
 
 		await user.save()
@@ -223,15 +223,15 @@ exports.verifyResetToken = async (req, res) => {
 // Reset password
 exports.resetPassword = async (req, res) => {
 	const { token } = req.params
-	const { id, newPassword, oldPassword } = req.body
+	const { email, newPassword, oldPassword } = req.body
 
 	try {
 		let user = null
 
 		if (token && token !== 'undefined') {
 			user = await User.findOne({ resetPasswordToken: token })
-		} else if (id) {
-			user = await User.findById(id)
+		} else if (email) {
+			user = await User.findOne({ email })
 		}
 
 		if (!user) {
@@ -242,7 +242,7 @@ exports.resetPassword = async (req, res) => {
 		if ((!token || token === 'undefined') && oldPassword) {
 			const isMatch = await bcrypt.compare(oldPassword, user.password)
 			if (!isMatch) {
-				logger.warn(`Intento de reset fallido: Old password incorrecta para usuario ID ${id}`)
+				logger.warn(`Intento de reset fallido: Old password incorrecta para usuario Email ${email}`)
 				return res.status(400).json({ message: 'La contraseña antigua es incorrecta.' })
 			}
 		} else if (!token && !oldPassword) {
@@ -263,7 +263,7 @@ exports.resetPassword = async (req, res) => {
 		logger.info(`Contraseña restablecida con éxito para el usuario ${user.email}`)
 		res.status(200).json({ message: 'Contraseña restablecida con éxito.' })
 	} catch (error) {
-		logger.error(`Error en resetPassword para usuario ID ${id || 'N/A'}: ${error.message}`)
+		logger.error(`Error en resetPassword para usuario Email ${email || 'N/A'}: ${error.message}`)
 		res.status(500).json({ message: 'Error al restablecer la contraseña.', error: error.message })
 	}
 }
